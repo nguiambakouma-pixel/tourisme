@@ -11,20 +11,13 @@ import { useCounter, useInView, useScrollReveal } from '@/hooks';
 
 interface HomeProps { onNavigate: (page: string) => void }
 
-const HERO_IMAGES = [
-  'https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  'https://images.pexels.com/photos/1566837/pexels-photo-1566837.jpeg?auto=compress&cs=tinysrgb&w=1600',
-  'https://images.pexels.com/photos/2559942/pexels-photo-2559942.jpeg?auto=compress&cs=tinysrgb&w=1600',
-];
+const HERO_POSTER = '/images/hero/kribi-hero-poster.jpg';
+const HERO_VIDEO  = '/videos/kribi-hero.mp4';
+const prefersReducedMotion =
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const COLLAGE_IMAGES = [
-  { src: 'https://images.pexels.com/photos/1566837/pexels-photo-1566837.jpeg?auto=compress&cs=tinysrgb&w=600', label: 'Quad', span: 'col-span-2 row-span-2' },
-  { src: 'https://images.pexels.com/photos/1295138/pexels-photo-1295138.jpeg?auto=compress&cs=tinysrgb&w=400', label: 'Jet Ski', span: 'col-span-1 row-span-1' },
-  { src: 'https://images.pexels.com/photos/2559942/pexels-photo-2559942.jpeg?auto=compress&cs=tinysrgb&w=400', label: 'Chutes Lobé', span: 'col-span-1 row-span-1' },
-  { src: 'https://images.pexels.com/photos/1148496/pexels-photo-1148496.jpeg?auto=compress&cs=tinysrgb&w=400', label: 'Fruits de mer', span: 'col-span-1 row-span-1' },
-  { src: 'https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=400', label: 'Hébergements', span: 'col-span-1 row-span-1' },
-  { src: 'https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=600', label: 'Plages', span: 'col-span-2 row-span-1' },
-];
+
 
 const STATS = [
   { value: 1500, suffix: '+', label: 'Voyageurs satisfaits' },
@@ -58,62 +51,56 @@ export function HomePage({ onNavigate }: HomeProps) {
     <div className="page-enter">
       {/* ═══════════════ HERO ═══════════════ */}
       <section className="relative h-screen min-h-[700px] overflow-hidden">
-        {/* Slideshow */}
+        {/* Video / poster background */}
         <div className="absolute inset-0">
-          {HERO_IMAGES.map((src, i) => (
-            <div
-              key={i}
-              className="hero-slide"
-              style={{ backgroundImage: `url(${src})` }}
+          {prefersReducedMotion ? (
+            <img
+              src={HERO_POSTER}
+              alt="Plage de Kribi"
+              className="absolute inset-0 w-full h-full object-cover"
             />
-          ))}
+          ) : (
+            <video
+              className="absolute inset-0 w-full h-full object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              poster={HERO_POSTER}
+            >
+              <source src={HERO_VIDEO} type="video/mp4" />
+            </video>
+          )}
           <div className="absolute inset-0 hero-bg"></div>
         </div>
 
         {/* Content */}
-        <div className="relative z-10 h-full max-w-7xl mx-auto px-5 lg:px-8 flex items-center pt-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center w-full">
-            {/* Left: text */}
-            <div className="animate-fade-in-up">
-              <span className="section-badge mb-6" style={{ background: 'rgba(255,255,255,0.15)', borderColor: 'rgba(255,255,255,0.25)', color: '#fff' }}>
-                Kribi · Cameroun
-              </span>
-              <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.05]">
-                Explorez Kribi<br /><span className="gradient-text-gold">autrement</span>
-              </h1>
-              <p className="mt-6 text-lg md:text-xl text-white/85 leading-relaxed max-w-xl">
-                Vivez des expériences authentiques entre mer, forêt et culture locale. Le Cameroun comme vous ne l'avez jamais vu.
-              </p>
-              <div className="mt-9 flex flex-col sm:flex-row gap-4">
-                <button
-                  onClick={() => onNavigate('experiences')}
-                  className="btn-shimmer text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 shadow-ocean group"
-                >
-                  Découvrir nos expériences
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </button>
-                <button
-                  onClick={() => onNavigate('contact')}
-                  className="glass text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 hover:bg-white/25 transition-all duration-300"
-                >
-                  Nous contacter
-                </button>
-              </div>
-            </div>
-
-            {/* Right: image collage */}
-            <div className="hidden lg:grid grid-cols-3 grid-rows-3 gap-3 animate-fade-in-right" style={{ animationDelay: '0.2s' }}>
-              {COLLAGE_IMAGES.map((img, i) => (
-                <div
-                  key={i}
-                  className={`img-zoom relative rounded-2xl overflow-hidden shadow-2xl group ${img.span}`}
-                >
-                  <img src={img.src} alt={img.label} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-navy/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-3">
-                    <span className="text-white text-sm font-semibold">{img.label}</span>
-                  </div>
-                </div>
-              ))}
+        <div className="relative z-10 h-full max-w-5xl mx-auto px-5 lg:px-8 flex items-center pt-20">
+          <div className="w-full animate-fade-in-up">
+            <span className="section-badge mb-6" style={{ background: 'rgba(255,255,255,0.15)', borderColor: 'rgba(255,255,255,0.25)', color: '#fff' }}>
+              Kribi · Cameroun
+            </span>
+            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.05]">
+              Explorez Kribi<br /><span className="gradient-text-gold">autrement</span>
+            </h1>
+            <p className="mt-6 text-lg md:text-xl text-white/85 leading-relaxed max-w-2xl">
+              Vivez des expériences authentiques entre mer, forêt et culture locale. Le Cameroun comme vous ne l'avez jamais vu.
+            </p>
+            <div className="mt-9 flex flex-col sm:flex-row gap-4">
+              <button
+                onClick={() => onNavigate('experiences')}
+                className="btn-shimmer text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 shadow-ocean group"
+              >
+                Découvrir nos expériences
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </button>
+              <button
+                onClick={() => onNavigate('contact')}
+                className="glass text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 hover:bg-white/25 transition-all duration-300"
+              >
+                Nous contacter
+              </button>
             </div>
           </div>
         </div>
@@ -136,8 +123,8 @@ export function HomePage({ onNavigate }: HomeProps) {
       </section>
 
       {/* ═══════════════ SEARCH BAR ═══════════════ */}
-      <section className="relative -mt-12 z-30 px-5">
-        <div className="max-w-4xl mx-auto">
+      <section className="relative -mt-16 z-30 px-5">
+        <div className="max-w-3xl mx-auto">
           {searchDone ? (
             <div className="search-pill p-8 text-center animate-scale-in">
               <div className="w-14 h-14 rounded-full bg-forest-pale mx-auto mb-3 flex items-center justify-center">
@@ -146,29 +133,29 @@ export function HomePage({ onNavigate }: HomeProps) {
               <p className="text-navy font-semibold text-lg">Recherche terminée ! Découvrez nos meilleures offres ci-dessous.</p>
             </div>
           ) : (
-            <form onSubmit={handleSearch} className="search-pill p-2.5 flex flex-col sm:flex-row items-center gap-3">
-              <div className="flex-1 flex items-center gap-3 px-5 py-2 w-full">
+            <form onSubmit={handleSearch} className="search-pill p-2 flex items-center gap-2 overflow-hidden">
+              <div className="flex-1 flex items-center gap-3 px-4 py-2 min-w-0">
                 <Search className="w-5 h-5 text-ocean shrink-0" />
                 <input
                   type="text"
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                   placeholder="Rechercher activités, logements, excursions..."
-                  className="flex-1 bg-transparent text-navy placeholder-slate-400 focus:outline-none text-base py-2"
+                  className="w-full bg-transparent text-navy placeholder-slate-400 focus:outline-none text-sm py-2"
                 />
               </div>
-              <button type="submit" className="btn-shimmer text-white px-8 py-3.5 rounded-full font-semibold flex items-center gap-2 whitespace-nowrap w-full sm:w-auto justify-center">
+              <button type="submit" className="btn-shimmer text-white px-6 py-3 rounded-full font-semibold text-sm flex items-center gap-2 whitespace-nowrap shrink-0">
                 Rechercher <ArrowRight className="w-4 h-4" />
               </button>
             </form>
           )}
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
             <span className="text-white/90 text-xs font-medium">Suggestions :</span>
             {['Chutes de la Lobé', 'Jet Ski', 'Fruits de mer', 'Camping plage'].map((tag) => (
               <button
                 key={tag}
                 onClick={() => { setSearchValue(tag); setSearchDone(true); setTimeout(() => setSearchDone(false), 3500); }}
-                className="text-xs px-3 py-1.5 rounded-full glass-dark text-white/90 hover:bg-white/25 transition-all"
+                className="text-xs px-3 py-1.5 rounded-full glass-dark text-white/90 hover:bg-white hover:text-navy transition-all duration-200"
               >
                 {tag}
               </button>
