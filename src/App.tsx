@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { HomePage } from '@/pages/HomePage';
@@ -13,10 +14,18 @@ export type Page =
   | 'home' | 'about' | 'experiences'
   | 'accommodations' | 'gallery' | 'blog' | 'contact';
 
-function App() {
-  const [page, setPage] = useState<Page>('home');
+function currentPageFromPath(pathname: string): Page {
+  const seg = pathname.replace(/^\//, '');
+  return (seg === '' ? 'home' : seg) as Page;
+}
 
-  const handleNavigate = (p: string) => setPage(p as Page);
+function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const page = currentPageFromPath(location.pathname);
+
+  const handleNavigate = (p: string) => navigate(p === 'home' ? '/' : `/${p}`);
 
   useEffect(() => {
     document.title = `StayEatSee+ | ${pageTitle(page)}`;
@@ -26,14 +35,17 @@ function App() {
     <div className="min-h-screen bg-white font-sans">
       <Navbar currentPage={page} onNavigate={handleNavigate} />
 
-      <main key={page} className="page-enter">
-        {page === 'home'           && <HomePage onNavigate={handleNavigate} />}
-        {page === 'about'          && <AboutPage />}
-        {page === 'experiences'    && <ExperiencesPage onNavigate={handleNavigate} />}
-        {page === 'accommodations' && <AccommodationsPage onNavigate={handleNavigate} />}
-        {page === 'gallery'        && <GalleryPage />}
-        {page === 'blog'           && <BlogPage />}
-        {page === 'contact'        && <ContactPage />}
+      <main className="page-enter">
+        <Routes>
+          <Route path="/"               element={<HomePage onNavigate={handleNavigate} />} />
+          <Route path="/about"          element={<AboutPage />} />
+          <Route path="/experiences"    element={<ExperiencesPage onNavigate={handleNavigate} />} />
+          <Route path="/accommodations" element={<AccommodationsPage onNavigate={handleNavigate} />} />
+          <Route path="/gallery"        element={<GalleryPage />} />
+          <Route path="/blog"           element={<BlogPage />} />
+          <Route path="/contact"        element={<ContactPage />} />
+          <Route path="*"               element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
 
       <Footer onNavigate={handleNavigate} />
@@ -51,7 +63,7 @@ function pageTitle(p: Page): string {
     blog: 'Blog',
     contact: 'Contact',
   };
-  return titles[p];
+  return titles[p] ?? 'Explorez Kribi Autrement';
 }
 
 export default App;

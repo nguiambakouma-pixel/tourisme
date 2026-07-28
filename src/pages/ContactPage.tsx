@@ -7,12 +7,42 @@ export function ContactPage() {
   useScrollReveal();
   const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
-    setForm({ name: '', email: '', phone: '', subject: '', message: '' });
-    setTimeout(() => setSent(false), 5000);
+    setIsSubmitting(true);
+    setError(false);
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: 'ae59c96b-b736-451a-b331-69545f1763f8',
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          subject: 'Nouvelle demande depuis le site StayEatSee+',
+          from_name: 'StayEatSee+ Website',
+          message: form.message,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setSent(true);
+        setForm({ name: '', email: '', phone: '', subject: '', message: '' });
+        setTimeout(() => setSent(false), 5000);
+      } else {
+        setError(true);
+        setTimeout(() => setError(false), 5000);
+      }
+    } catch {
+      setError(true);
+      setTimeout(() => setError(false), 5000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const update = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -54,6 +84,11 @@ export function ContactPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
+                  {error && (
+                    <div className="bg-red-50 border border-red-300 rounded-2xl p-5 text-center animate-scale-in">
+                      <p className="text-red-700 font-semibold">Une erreur est survenue, merci de réessayer ou de nous contacter directement par téléphone.</p>
+                    </div>
+                  )}
                   <div className="grid sm:grid-cols-2 gap-5">
                     <Field label="Nom complet" required>
                       <input type="text" required value={form.name} onChange={update('name')} placeholder="Votre nom" className={inputCls} />
@@ -73,8 +108,12 @@ export function ContactPage() {
                   <Field label="Message" required>
                     <textarea required value={form.message} onChange={update('message')} rows={5} placeholder="Votre message..." className={`${inputCls} resize-none`}></textarea>
                   </Field>
-                  <button type="submit" className="btn-shimmer text-white px-8 py-4 rounded-full font-semibold flex items-center justify-center gap-2 shadow-ocean group w-full sm:w-auto">
-                    Envoyer le message <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="btn-shimmer text-white px-8 py-4 rounded-full font-semibold flex items-center justify-center gap-2 shadow-ocean group w-full sm:w-auto disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? 'Envoi...' : (<>Envoyer le message <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>)}
                   </button>
                 </form>
               )}

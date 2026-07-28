@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Search, MapPin, Star, ArrowRight, Compass, Clock, Shield, Headphones,
-  BadgeCheck, Wallet, Sparkles, Quote, ChevronRight,
+  BadgeCheck, Wallet, Sparkles, Quote,
 } from 'lucide-react';
 import { EXPERIENCES, ACCOMMODATIONS } from '@/data';
-import { SectionTitle, WaveDivider, StarRating } from '@/components/ui';
+import { SectionTitle } from '@/components/ui';
 import { AccommodationFeatures } from '@/components/AccommodationFeatures';
 import { Testimonials } from '@/components/Testimonials';
 import { useCounter, useInView, useScrollReveal } from '@/hooks';
