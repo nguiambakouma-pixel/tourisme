@@ -3,13 +3,14 @@ import { Star, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { PageHero, SectionTitle, StarRating } from '@/components/ui';
 import { AccommodationFeatures } from '@/components/AccommodationFeatures';
 import { ACCOMMODATIONS } from '@/data';
-import { useScrollReveal } from '@/hooks';
+import { usePageMeta, useScrollReveal } from '@/hooks';
 
 interface AccommodationsProps { onNavigate: (page: string) => void }
 
 const TYPES = ['Tous', 'Studio', 'Appartement', 'Villa', 'Résidence'];
 
 export function AccommodationsPage({ onNavigate }: AccommodationsProps) {
+  usePageMeta('Hébergements | StayEatSee+', 'Studios, appartements, villas et résidences premium à Kribi, avec vue mer, piscine et parking sécurisé.');
   useScrollReveal();
   const [filter, setFilter] = useState('Tous');
   const [booked, setBooked] = useState<number | null>(null);

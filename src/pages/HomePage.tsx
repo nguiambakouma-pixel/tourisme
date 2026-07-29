@@ -7,7 +7,7 @@ import { EXPERIENCES, ACCOMMODATIONS } from '@/data';
 import { SectionTitle } from '@/components/ui';
 import { AccommodationFeatures } from '@/components/AccommodationFeatures';
 import { Testimonials } from '@/components/Testimonials';
-import { useCounter, useInView, useScrollReveal } from '@/hooks';
+import { useCounter, useInView, usePageMeta, useScrollReveal } from '@/hooks';
 
 interface HomeProps { onNavigate: (page: string) => void }
 
@@ -36,6 +36,7 @@ const WHY_US = [
 ];
 
 export function HomePage({ onNavigate }: HomeProps) {
+  usePageMeta('StayEatSee+ | Explorez Kribi Autrement', 'Vivez des expériences authentiques entre mer, forêt et culture locale à Kribi, Cameroun. Excursions, hébergements et gastronomie locale.');
   useScrollReveal();
   const [searchValue, setSearchValue] = useState('');
   const [searchDone, setSearchDone] = useState(false);

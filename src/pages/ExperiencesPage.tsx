@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { Clock, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { PageHero, SectionTitle } from '@/components/ui';
 import { EXPERIENCES } from '@/data';
-import { useScrollReveal } from '@/hooks';
+import { usePageMeta, useScrollReveal } from '@/hooks';
 
 interface ExperiencesProps { onNavigate: (page: string) => void }
 
 const CATEGORIES = ['Tous', 'Aventure', 'Nautique', 'Nature', 'Culture', 'Gastronomie', 'Romantique'];
 
 export function ExperiencesPage({ onNavigate }: ExperiencesProps) {
+  usePageMeta('Nos Expériences | StayEatSee+', 'Douze expériences uniques à Kribi : quad, jet-ski, chutes de la Lobé, pêche artisanale, randonnée et plus encore.');
   useScrollReveal();
   const [filter, setFilter] = useState('Tous');
   const [booked, setBooked] = useState<number | null>(null);

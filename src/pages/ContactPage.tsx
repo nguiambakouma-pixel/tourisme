@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { MapPin, Mail, Phone, Clock, MessageCircle, Send, CheckCircle2, Instagram, Facebook, Twitter } from 'lucide-react';
 import { PageHero, SectionTitle } from '@/components/ui';
-import { useScrollReveal } from '@/hooks';
+import { usePageMeta, useScrollReveal } from '@/hooks';
 
 export function ContactPage() {
+  usePageMeta('Contact | StayEatSee+', 'Contactez StayEatSee+ pour organiser votre séjour à Kribi : réservations, questions, devis personnalisés.');
   useScrollReveal();
   const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
   const [sent, setSent] = useState(false);

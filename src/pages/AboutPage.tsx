@@ -1,7 +1,7 @@
 import { Compass, Eye, Heart, Users, Leaf, Award, Sparkles } from 'lucide-react';
 import { PageHero, SectionTitle, WaveDivider } from '@/components/ui';
 import { TEAM } from '@/data';
-import { useScrollReveal } from '@/hooks';
+import { usePageMeta, useScrollReveal } from '@/hooks';
 
 const VALUES = [
   { icon: Heart,     title: 'Authenticité',  desc: 'Nous préservons et valorisons la culture locale de Kribi, sans artifice.' },
@@ -19,6 +19,7 @@ const TIMELINE = [
 ];
 
 export function AboutPage() {
+  usePageMeta('À propos | StayEatSee+', 'Découvrez l\'histoire, la mission et l\'équipe de StayEatSee+, agence touristique premium née à Kribi, Cameroun.');
   useScrollReveal();
   return (
     <div className="page-enter">

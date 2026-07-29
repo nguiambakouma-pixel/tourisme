@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { Calendar, Clock, ArrowRight, User, X } from 'lucide-react';
 import { PageHero, SectionTitle } from '@/components/ui';
 import { BLOG_POSTS } from '@/data';
-import { useScrollReveal } from '@/hooks';
+import { usePageMeta, useScrollReveal } from '@/hooks';
 
 const CATEGORIES = ['Tous', 'Destinations', 'Activités', 'Gastronomie', 'Conseils', 'Nature', 'Culture'];
 
 export function BlogPage() {
+  usePageMeta('Blog | StayEatSee+', 'Conseils, destinations et récits pour préparer votre voyage à Kribi et découvrir le Cameroun authentique.');
   useScrollReveal();
   const [filter, setFilter] = useState('Tous');
   const [selected, setSelected] = useState<typeof BLOG_POSTS[0] | null>(null);

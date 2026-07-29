@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
@@ -27,10 +26,6 @@ function App() {
 
   const handleNavigate = (p: string) => navigate(p === 'home' ? '/' : `/${p}`);
 
-  useEffect(() => {
-    document.title = `StayEatSee+ | ${pageTitle(page)}`;
-  }, [page]);
-
   return (
     <div className="min-h-screen bg-white font-sans">
       <Navbar currentPage={page} onNavigate={handleNavigate} />
@@ -51,19 +46,6 @@ function App() {
       <Footer onNavigate={handleNavigate} />
     </div>
   );
-}
-
-function pageTitle(p: Page): string {
-  const titles: Record<Page, string> = {
-    home: 'Explorez Kribi Autrement',
-    about: 'À propos',
-    experiences: 'Nos expériences',
-    accommodations: 'Hébergements',
-    gallery: 'Galerie',
-    blog: 'Blog',
-    contact: 'Contact',
-  };
-  return titles[p] ?? 'Explorez Kribi Autrement';
 }
 
 export default App;

@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { X, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { PageHero } from '@/components/ui';
 import { GALLERY_IMAGES } from '@/data';
-import { useScrollReveal } from '@/hooks';
+import { usePageMeta, useScrollReveal } from '@/hooks';
 
 const CATEGORIES = ['Tous', 'Plages', 'Aventure', 'Nautique', 'Nature', 'Culture', 'Gastronomie', 'Hébergements'];
 
 export function GalleryPage() {
+  usePageMeta('Galerie | StayEatSee+', 'Explorez Kribi en images : plages, aventures, nature et culture camerounaise à travers notre galerie photo.');
   useScrollReveal();
   const [filter, setFilter] = useState('Tous');
   const [lightbox, setLightbox] = useState<number | null>(null);
