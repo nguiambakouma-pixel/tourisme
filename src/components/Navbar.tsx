@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Menu, X, Compass } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { NAV_LINKS } from '@/data';
 
 interface NavbarProps {
@@ -51,15 +51,14 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
           {/* ── Logo ── */}
           <button
             onClick={() => handleNav('home')}
-            className="flex items-center gap-2 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-light/70 rounded-2xl"
+            className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 rounded-2xl"
             aria-label="Retour à l'accueil"
           >
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-ocean to-forest flex items-center justify-center shadow-ocean group-hover:scale-110 transition-transform duration-300">
-              <Compass className="w-6 h-6 text-white transition-transform duration-300 group-hover:rotate-6" />
-            </div>
             <div className="text-left leading-none">
-              <span className="text-xl font-extrabold text-white tracking-tight">StayEatSee<span className="text-gold-light">+</span></span>
-              <span className="block text-[10px] tracking-[0.25em] text-white/70 font-medium mt-0.5">Kribi · Cameroun</span>
+              <span className="text-2xl font-extrabold tracking-tight leading-none">
+                <span className="text-brand">Stay</span><span className="text-accent">Eat</span><span className="text-sky">See</span><span className="text-accent">+</span>
+              </span>
+              <span className="block text-[10px] tracking-[0.25em] text-white/60 font-medium mt-0.5">Kribi · Cameroun</span>
             </div>
           </button>
 
@@ -72,16 +71,16 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
                   key={link.page}
                   onClick={() => handleNav(link.page)}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-light/70 ${
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 ${
                     isActive
                       ? 'text-white'
                       : 'text-white/85 hover:text-white hover:bg-white/10'
                   }`}
                 >
                   {link.label}
-                  {/* Indicateur actif : trait gold animé */}
+                  {/* Indicateur actif : trait accent animé */}
                   <span
-                    className={`absolute bottom-0.5 left-1/2 -translate-x-1/2 h-[2px] rounded-full bg-gold-light transition-all duration-300 ${
+                    className={`absolute bottom-0.5 left-1/2 -translate-x-1/2 h-[2px] rounded-full bg-accent-light transition-all duration-300 ${
                       isActive ? 'w-5 opacity-100' : 'w-0 opacity-0'
                     }`}
                   />
@@ -94,7 +93,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
           <div className="hidden lg:block">
             <button
               onClick={() => handleNav('contact')}
-              className="btn-shimmer text-white px-6 py-2.5 rounded-full text-sm font-semibold shadow-ocean focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-light/70"
+              className="btn-shimmer text-white px-6 py-2.5 rounded-full text-sm font-semibold shadow-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
             >
               Réserver maintenant
             </button>
@@ -102,7 +101,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
 
           {/* ── Mobile toggle ── */}
           <button
-            className="lg:hidden text-white p-2 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-light/70 transition-colors"
+            className="lg:hidden text-white p-2 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
             aria-expanded={mobileOpen}
@@ -127,7 +126,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
                   key={link.page}
                   onClick={() => handleNav(link.page)}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`px-4 py-3 rounded-2xl text-left font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-light/70 ${
+                  className={`px-4 py-3 rounded-2xl text-left font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 ${
                     isActive
                       ? 'bg-white/15 text-white'
                       : 'text-white/85 hover:bg-white/10'
@@ -135,7 +134,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
                 >
                   <span className="flex items-center gap-2">
                     {isActive && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-gold-light shrink-0 animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent-light shrink-0 animate-pulse" />
                     )}
                     {link.label}
                   </span>
@@ -144,7 +143,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
             })}
             <button
               onClick={() => handleNav('contact')}
-              className="btn-shimmer text-white px-4 py-3 rounded-2xl font-semibold mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-light/70"
+              className="btn-shimmer text-white px-4 py-3 rounded-2xl font-semibold mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
             >
               Réserver maintenant
             </button>
@@ -155,7 +154,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
       {/* ── Overlay semi-transparent derrière le menu mobile ── */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-navy/60 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-brand/60 backdrop-blur-sm lg:hidden"
           style={{ top: '0' }}
           onClick={() => setMobileOpen(false)}
           aria-hidden="true"

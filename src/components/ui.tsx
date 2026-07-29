@@ -1,5 +1,3 @@
-import { Compass } from 'lucide-react';
-
 interface SectionTitleProps {
   badge?: string;
   title: string;
@@ -12,7 +10,7 @@ export function SectionTitle({ badge, title, subtitle, center, light }: SectionT
   return (
     <div className={`reveal ${center ? 'text-center mx-auto max-w-2xl' : 'max-w-xl'} mb-12`}>
       {badge && <span className="section-badge mb-4">{badge}</span>}
-      <h2 className={`font-serif text-4xl md:text-5xl font-bold mt-4 leading-tight ${light ? 'text-white' : 'text-navy'}`}>
+      <h2 className={`font-serif text-4xl md:text-5xl font-bold mt-4 leading-tight ${light ? 'text-white' : 'text-brand'}`}>
         {title}
       </h2>
       {subtitle && (
@@ -25,15 +23,13 @@ export function SectionTitle({ badge, title, subtitle, center, light }: SectionT
 }
 
 export function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
-  const dim = size === 'lg' ? 'w-14 h-14' : size === 'sm' ? 'w-9 h-9' : 'w-11 h-11';
   const txt = size === 'lg' ? 'text-2xl' : size === 'sm' ? 'text-base' : 'text-xl';
   return (
-    <div className="flex items-center gap-2">
-      <div className={`${dim} rounded-2xl bg-gradient-to-br from-ocean to-forest flex items-center justify-center shadow-ocean`}>
-        <Compass className="w-1/2 h-1/2 text-white" />
-      </div>
+    <div className="flex items-center">
       <div className="leading-none">
-        <span className={`${txt} font-extrabold text-navy tracking-tight`}>StayEatSee<span className="text-gold">+</span></span>
+        <span className={`${txt} font-extrabold tracking-tight`}>
+          <span className="text-brand">Stay</span><span className="text-accent">Eat</span><span className="text-sky">See</span><span className="text-accent">+</span>
+        </span>
         <span className="block text-[9px] tracking-[0.25em] text-slate-500 font-medium mt-0.5">Kribi · Cameroun</span>
       </div>
     </div>
@@ -42,11 +38,11 @@ export function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
 
 export function WaveDivider({ color = 'white', flip = false }: { color?: string; flip?: boolean }) {
   const fills: Record<string, string> = {
-    white: '#ffffff',
-    navy: '#0A2540',
-    ocean: '#0E5E8C',
-    forest: '#E8F5EE',
-    sand: '#F5E6D3',
+    white:  '#ffffff',
+    brand:  '#1A3C7A',
+    sky:    '#3EABD4',
+    accent: '#D4572A',
+    sand:   '#F5E6D3',
   };
   return (
     <div className="wave-container" style={{ transform: flip ? 'rotate(180deg)' : 'none' }}>
@@ -64,7 +60,7 @@ export function StarRating({ rating, size = 16 }: StarRatingProps) {
       {[1, 2, 3, 4, 5].map((i) => (
         <span
           key={i}
-          className={i <= Math.round(rating) ? 'text-gold-light' : 'text-slate-300'}
+          className={i <= Math.round(rating) ? 'text-accent' : 'text-slate-300'}
           style={{ fontSize: size }}
         >
           ★
@@ -86,7 +82,7 @@ export function PageHero({ badge, title, subtitle, image }: PageHeroProps) {
     <section className="relative h-[60vh] min-h-[420px] flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0">
         <img src={image} alt={title} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-ocean opacity-80"></div>
+        <div className="absolute inset-0 bg-gradient-brand opacity-85"></div>
       </div>
       <div className="relative z-10 text-center px-5 max-w-3xl mx-auto animate-fade-in-up">
         <span className="section-badge mb-5" style={{ background: 'rgba(255,255,255,0.15)', borderColor: 'rgba(255,255,255,0.25)', color: '#fff' }}>

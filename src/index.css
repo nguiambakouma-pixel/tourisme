@@ -37,9 +37,9 @@
   50%       { transform: translateY(-12px); }
 }
 @keyframes pulse-ring {
-  0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(14,94,140,0.4); }
-  70%  { transform: scale(1);    box-shadow: 0 0 0 16px rgba(14,94,140,0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(14,94,140,0); }
+  0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(62,171,212,0.45); }
+  70%  { transform: scale(1);    box-shadow: 0 0 0 16px rgba(62,171,212,0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(62,171,212,0); }
 }
 @keyframes shimmer {
   0%   { background-position: -200% center; }
@@ -53,7 +53,6 @@
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes spin-slow {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
@@ -97,7 +96,7 @@
 
 /* ── Hero ──────────────────────────────────────────────────── */
 .hero-bg {
-  background: linear-gradient(135deg, rgba(10,37,64,0.72) 0%, rgba(14,94,140,0.45) 60%, rgba(46,139,87,0.30) 100%);
+  background: linear-gradient(135deg, rgba(26,60,122,0.80) 0%, rgba(62,171,212,0.45) 60%, rgba(212,87,42,0.20) 100%);
 }
 
 /* ── Glass ─────────────────────────────────────────────────── */
@@ -108,7 +107,7 @@
   border: 1px solid rgba(255,255,255,0.22);
 }
 .glass-dark {
-  background: rgba(10,37,64,0.55);
+  background: rgba(26,60,122,0.55);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255,255,255,0.12);
@@ -126,38 +125,53 @@
 
 /* ── Gradient text ─────────────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #0E5E8C, #2E8B57);
+  background: linear-gradient(135deg, #1A3C7A, #3EABD4);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-.gradient-text-gold {
-  background: linear-gradient(135deg, #D4A843, #F5C842);
+.gradient-text-accent {
+  background: linear-gradient(135deg, #D4572A, #E87A50);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* ── Shimmer button ────────────────────────────────────────── */
+/* ── Shimmer buttons ────────────────────────────────────────── */
+/* CTA principal — Orange accent */
 .btn-shimmer {
-  background: linear-gradient(90deg, #0E5E8C 0%, #1a7ab8 50%, #0E5E8C 100%);
+  background: linear-gradient(90deg, #D4572A 0%, #E87A50 50%, #D4572A 100%);
   background-size: 200% auto;
   transition: background-position 0.5s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 .btn-shimmer:hover {
   background-position: right center;
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(14,94,140,0.45);
+  box-shadow: 0 12px 32px rgba(212,87,42,0.45);
 }
-.btn-green-shimmer {
-  background: linear-gradient(90deg, #2E8B57 0%, #3daa6e 50%, #2E8B57 100%);
+
+/* Secondaire — Bleu ciel sky */
+.btn-sky-shimmer {
+  background: linear-gradient(90deg, #3EABD4 0%, #6DC4E4 50%, #3EABD4 100%);
   background-size: 200% auto;
   transition: background-position 0.5s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
-.btn-green-shimmer:hover {
+.btn-sky-shimmer:hover {
   background-position: right center;
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(46,139,87,0.45);
+  box-shadow: 0 12px 32px rgba(62,171,212,0.40);
+}
+
+/* Tertaire — Bleu brand */
+.btn-brand-shimmer {
+  background: linear-gradient(90deg, #1A3C7A 0%, #254FA3 50%, #1A3C7A 100%);
+  background-size: 200% auto;
+  transition: background-position 0.5s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-brand-shimmer:hover {
+  background-position: right center;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(26,60,122,0.42);
 }
 
 /* ── Cards ─────────────────────────────────────────────────── */
@@ -166,7 +180,7 @@
 }
 .card-hover:hover {
   transform: translateY(-8px) scale(1.01);
-  box-shadow: 0 24px 60px rgba(14,94,140,0.18);
+  box-shadow: 0 24px 60px rgba(26,60,122,0.15);
 }
 .img-zoom img, .img-zoom {
   transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
@@ -176,9 +190,9 @@
 
 /* ── Navbar ────────────────────────────────────────────────── */
 .navbar-scrolled {
-  background: rgba(10,37,64,0.96) !important;
+  background: rgba(26,60,122,0.97) !important;
   backdrop-filter: blur(20px);
-  box-shadow: 0 4px 32px rgba(10,37,64,0.25);
+  box-shadow: 0 4px 32px rgba(26,60,122,0.30);
 }
 
 /* ── Masonry ───────────────────────────────────────────────── */
@@ -213,12 +227,12 @@
   transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
 }
 
-/* ── Section dividers ──────────────────────────────────────── */
+/* ── Section badge ─────────────────────────────────────────── */
 .section-badge {
   display: inline-block;
-  background: linear-gradient(135deg, rgba(14,94,140,0.12), rgba(46,139,87,0.12));
-  border: 1px solid rgba(14,94,140,0.2);
-  color: #0E5E8C;
+  background: linear-gradient(135deg, rgba(62,171,212,0.12), rgba(212,87,42,0.10));
+  border: 1px solid rgba(62,171,212,0.25);
+  color: #2A87AD;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -233,13 +247,13 @@
 /* ── Search bar ────────────────────────────────────────────── */
 .search-pill {
   background: rgba(255,255,255,0.96);
-  box-shadow: 0 24px 80px rgba(10,37,64,0.22);
+  box-shadow: 0 24px 80px rgba(26,60,122,0.22);
   border-radius: 999px;
   backdrop-filter: blur(8px);
 }
 
 /* ── Star rating ───────────────────────────────────────────── */
-.stars { color: #F59E0B; }
+.stars { color: #D4572A; }
 
 /* ── Smooth page transitions ───────────────────────────────── */
 .page-enter { animation: fadeIn 0.4s ease; }
@@ -247,7 +261,7 @@
 /* ── Scrollbar ─────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #f1f5f9; }
-::-webkit-scrollbar-thumb { background: #0E5E8C; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #3EABD4; border-radius: 3px; }
 
 /* ── Timeline ──────────────────────────────────────────────── */
 .timeline-line {
@@ -255,6 +269,6 @@
   left: 50%;
   top: 0; bottom: 0;
   width: 2px;
-  background: linear-gradient(to bottom, #0E5E8C, #2E8B57);
+  background: linear-gradient(to bottom, #1A3C7A, #3EABD4);
   transform: translateX(-50%);
 }

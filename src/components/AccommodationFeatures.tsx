@@ -18,10 +18,10 @@ export function AccommodationFeatures({ features }: { features: string[] }) {
         return (
           <div
             key={f}
-            className="flex items-center gap-1.5 text-xs font-medium text-slate-600 bg-ocean-pale px-2.5 py-1.5 rounded-lg"
+            className="flex items-center gap-1.5 text-xs font-medium text-slate-600 bg-sky-pale px-2.5 py-1.5 rounded-lg"
             title={item.label}
           >
-            <Icon className="w-4 h-4 text-ocean" />
+            <Icon className="w-4 h-4 text-sky" />
             {item.label}
           </div>
         );

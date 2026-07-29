@@ -1,5 +1,7 @@
 // Static data for the site
 
+export { socials } from './socials';
+
 export const NAV_LINKS = [
   { label: 'Accueil',        page: 'home' },
   { label: 'À propos',       page: 'about' },

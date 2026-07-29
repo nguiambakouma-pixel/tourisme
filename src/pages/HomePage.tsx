@@ -17,8 +17,6 @@ const prefersReducedMotion =
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-
-
 const STATS = [
   { value: 1500, suffix: '+', label: 'Voyageurs satisfaits' },
   { value: 40,   suffix: '+', label: 'Expériences uniques' },
@@ -27,12 +25,12 @@ const STATS = [
 ];
 
 const WHY_US = [
-  { icon: Compass,   title: 'Guides locaux experts',   desc: 'Des guides nés à Kribi, passionnés et certifiés, qui connaissent chaque recoin de la région.' },
-  { icon: Shield,    title: 'Sécurité garantie',        desc: 'Activités encadrées et matériel conforme. Votre sécurité est notre priorité absolue.' },
-  { icon: Headphones,title: 'Assistance 24h/24',        desc: 'Une équipe disponible jour et nuit pour répondre à vos questions et besoins.' },
-  { icon: BadgeCheck,title: 'Hébergements sélectionnés',desc: 'Chaque logement est visité et validé par nos soins pour une qualité irréprochable.' },
-  { icon: Wallet,    title: 'Prix transparents',        desc: 'Aucun frais caché. Le prix annoncé est le prix payé, clair et honnête.' },
-  { icon: Sparkles,  title: 'Expériences authentiques', desc: 'Des moments vrais, loin du tourisme de masse. Le Cameroun dans sa pureté.' },
+  { icon: Compass,    title: 'Guides locaux experts',    desc: 'Des guides nés à Kribi, passionnés et certifiés, qui connaissent chaque recoin de la région.' },
+  { icon: Shield,     title: 'Sécurité garantie',         desc: 'Activités encadrées et matériel conforme. Votre sécurité est notre priorité absolue.' },
+  { icon: Headphones, title: 'Assistance 24h/24',         desc: 'Une équipe disponible jour et nuit pour répondre à vos questions et besoins.' },
+  { icon: BadgeCheck, title: 'Hébergements sélectionnés', desc: 'Chaque logement est visité et validé par nos soins pour une qualité irréprochable.' },
+  { icon: Wallet,     title: 'Prix transparents',         desc: 'Aucun frais caché. Le prix annoncé est le prix payé, clair et honnête.' },
+  { icon: Sparkles,   title: 'Expériences authentiques',  desc: 'Des moments vrais, loin du tourisme de masse. Le Cameroun dans sa pureté.' },
 ];
 
 export function HomePage({ onNavigate }: HomeProps) {
@@ -83,7 +81,7 @@ export function HomePage({ onNavigate }: HomeProps) {
               Kribi · Cameroun
             </span>
             <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.05]">
-              Explorez Kribi<br /><span className="gradient-text-gold">autrement</span>
+              Explorez Kribi<br /><span className="gradient-text-accent">autrement</span>
             </h1>
             <p className="mt-6 text-lg md:text-xl text-white/85 leading-relaxed max-w-2xl">
               Vivez des expériences authentiques entre mer, forêt et culture locale. Le Cameroun comme vous ne l'avez jamais vu.
@@ -91,7 +89,7 @@ export function HomePage({ onNavigate }: HomeProps) {
             <div className="mt-9 flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => onNavigate('experiences')}
-                className="btn-shimmer text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 shadow-ocean group"
+                className="btn-shimmer text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 shadow-accent group"
               >
                 Découvrir nos expériences
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -109,9 +107,9 @@ export function HomePage({ onNavigate }: HomeProps) {
         {/* Location pill */}
         <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-20 hidden md:block animate-float">
           <div className="glass-dark rounded-full px-5 py-2.5 flex items-center gap-2 text-white text-sm">
-            <MapPin className="w-4 h-4 text-gold-light" />
+            <MapPin className="w-4 h-4 text-accent-light" />
             <span className="font-medium">Kribi, Cameroun</span>
-            <span className="w-2 h-2 rounded-full bg-forest-light animate-pulse"></span>
+            <span className="w-2 h-2 rounded-full bg-sky-light animate-pulse"></span>
           </div>
         </div>
 
@@ -128,21 +126,21 @@ export function HomePage({ onNavigate }: HomeProps) {
         <div className="max-w-3xl mx-auto">
           {searchDone ? (
             <div className="search-pill p-8 text-center animate-scale-in">
-              <div className="w-14 h-14 rounded-full bg-forest-pale mx-auto mb-3 flex items-center justify-center">
-                <BadgeCheck className="w-7 h-7 text-forest" />
+              <div className="w-14 h-14 rounded-full bg-accent-pale mx-auto mb-3 flex items-center justify-center">
+                <BadgeCheck className="w-7 h-7 text-accent" />
               </div>
-              <p className="text-navy font-semibold text-lg">Recherche terminée ! Découvrez nos meilleures offres ci-dessous.</p>
+              <p className="text-brand font-semibold text-lg">Recherche terminée ! Découvrez nos meilleures offres ci-dessous.</p>
             </div>
           ) : (
             <form onSubmit={handleSearch} className="search-pill p-2 flex items-center gap-2 overflow-hidden">
               <div className="flex-1 flex items-center gap-3 px-4 py-2 min-w-0">
-                <Search className="w-5 h-5 text-ocean shrink-0" />
+                <Search className="w-5 h-5 text-sky shrink-0" />
                 <input
                   type="text"
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                   placeholder="Rechercher activités, logements, excursions..."
-                  className="w-full bg-transparent text-navy placeholder-slate-400 focus:outline-none text-sm py-2"
+                  className="w-full bg-transparent text-brand placeholder-slate-400 focus:outline-none text-sm py-2"
                 />
               </div>
               <button type="submit" className="btn-shimmer text-white px-6 py-3 rounded-full font-semibold text-sm flex items-center gap-2 whitespace-nowrap shrink-0">
@@ -156,7 +154,7 @@ export function HomePage({ onNavigate }: HomeProps) {
               <button
                 key={tag}
                 onClick={() => { setSearchValue(tag); setSearchDone(true); setTimeout(() => setSearchDone(false), 3500); }}
-                className="text-xs px-3 py-1.5 rounded-full glass-dark text-white/90 hover:bg-white hover:text-navy transition-all duration-200"
+                className="text-xs px-3 py-1.5 rounded-full glass-dark text-white/90 hover:bg-white hover:text-brand transition-all duration-200"
               >
                 {tag}
               </button>
@@ -167,7 +165,7 @@ export function HomePage({ onNavigate }: HomeProps) {
 
       {/* ═══════════════ STATS ═══════════════ */}
       <section ref={statsRef} className="py-22 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-ocean-pale via-white to-forest-pale"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-sky-pale via-white to-accent-pale"></div>
         <div className="max-w-6xl mx-auto px-5 lg:px-8 relative z-10">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {STATS.map((stat, i) => (
@@ -188,7 +186,7 @@ export function HomePage({ onNavigate }: HomeProps) {
             />
             <button
               onClick={() => onNavigate('experiences')}
-              className="reveal-left flex items-center gap-2 text-ocean font-semibold hover:gap-3 transition-all whitespace-nowrap"
+              className="reveal-left flex items-center gap-2 text-sky font-semibold hover:gap-3 transition-all whitespace-nowrap"
             >
               Voir tout <ArrowRight className="w-5 h-5" />
             </button>
@@ -213,17 +211,17 @@ export function HomePage({ onNavigate }: HomeProps) {
                   </div>
                 </div>
                 <div className="p-6">
-                  <span className="text-xs font-bold text-forest tracking-wider uppercase">{exp.category}</span>
-                  <h3 className="font-serif text-xl font-bold text-navy mt-2">{exp.title}</h3>
+                  <span className="text-xs font-bold text-sky tracking-wider uppercase">{exp.category}</span>
+                  <h3 className="font-serif text-xl font-bold text-brand mt-2">{exp.title}</h3>
                   <p className="text-slate-600 text-sm mt-2 leading-relaxed line-clamp-2">{exp.description}</p>
                   <div className="flex items-center justify-between mt-5 pt-5 border-t border-slate-100">
                     <div>
-                      <span className="text-2xl font-bold text-ocean">{exp.price}</span>
+                      <span className="text-2xl font-bold text-accent">{exp.price}</span>
                       <span className="text-slate-500 text-sm"> FCFA</span>
                     </div>
                     <button
                       onClick={() => onNavigate('experiences')}
-                      className="bg-ocean-pale text-ocean px-4 py-2 rounded-full text-sm font-semibold hover:bg-ocean hover:text-white transition-all flex items-center gap-1.5 group"
+                      className="bg-accent-pale text-accent px-4 py-2 rounded-full text-sm font-semibold hover:bg-accent hover:text-white transition-all flex items-center gap-1.5 group"
                     >
                       Réserver <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                     </button>
@@ -237,7 +235,7 @@ export function HomePage({ onNavigate }: HomeProps) {
 
       {/* ═══════════════ ACCOMMODATIONS ═══════════════ */}
       <section className="py-22 bg-sand-light relative overflow-hidden">
-        <div className="absolute top-20 right-0 w-80 h-80 rounded-full bg-gold/10 blur-3xl pointer-events-none"></div>
+        <div className="absolute top-20 right-0 w-80 h-80 rounded-full bg-accent/10 blur-3xl pointer-events-none"></div>
         <div className="max-w-7xl mx-auto px-5 lg:px-8 relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <SectionTitle
@@ -247,7 +245,7 @@ export function HomePage({ onNavigate }: HomeProps) {
             />
             <button
               onClick={() => onNavigate('accommodations')}
-              className="reveal-left flex items-center gap-2 text-ocean font-semibold hover:gap-3 transition-all whitespace-nowrap"
+              className="reveal-left flex items-center gap-2 text-sky font-semibold hover:gap-3 transition-all whitespace-nowrap"
             >
               Voir tout <ArrowRight className="w-5 h-5" />
             </button>
@@ -262,25 +260,25 @@ export function HomePage({ onNavigate }: HomeProps) {
               >
                 <div className="img-zoom relative h-52 overflow-hidden">
                   <img src={acc.image} alt={acc.title} className="w-full h-full object-cover" />
-                  <div className="absolute top-3 left-3 bg-white/90 backdrop-blur px-2.5 py-1 rounded-full text-xs font-bold text-navy">
+                  <div className="absolute top-3 left-3 bg-white/90 backdrop-blur px-2.5 py-1 rounded-full text-xs font-bold text-brand">
                     {acc.type}
                   </div>
                   <div className="absolute top-3 right-3 glass-dark rounded-full px-2.5 py-1 flex items-center gap-1 text-white text-xs">
-                    <Star className="w-3 h-3 text-gold-light fill-gold-light" /> {acc.rating}
+                    <Star className="w-3 h-3 text-accent-light fill-accent-light" /> {acc.rating}
                   </div>
                 </div>
                 <div className="p-5">
-                  <h3 className="font-serif text-lg font-bold text-navy">{acc.title}</h3>
+                  <h3 className="font-serif text-lg font-bold text-brand">{acc.title}</h3>
                   <p className="text-slate-500 text-xs mt-1">{acc.reviews} avis</p>
                   <AccommodationFeatures features={acc.features} />
                   <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100">
                     <div>
-                      <span className="text-xl font-bold text-ocean">{acc.price}</span>
+                      <span className="text-xl font-bold text-accent">{acc.price}</span>
                       <span className="text-slate-500 text-xs"> /nuit</span>
                     </div>
                     <button
                       onClick={() => onNavigate('accommodations')}
-                      className="bg-forest text-white px-3.5 py-2 rounded-full text-xs font-semibold hover:bg-forest-dark transition-all"
+                      className="bg-brand text-white px-3.5 py-2 rounded-full text-xs font-semibold hover:bg-brand-light transition-all"
                     >
                       Réserver
                     </button>
@@ -307,13 +305,13 @@ export function HomePage({ onNavigate }: HomeProps) {
               return (
                 <div
                   key={i}
-                  className="reveal-scale group bg-gradient-to-br from-white to-ocean-pale/40 rounded-3xl p-8 border border-slate-100 hover:shadow-xl2 hover:border-ocean/20 transition-all duration-400"
+                  className="reveal-scale group bg-gradient-to-br from-white to-sky-pale/40 rounded-3xl p-8 border border-slate-100 hover:shadow-xl2 hover:border-sky/20 transition-all duration-400"
                   style={{ transitionDelay: `${i * 80}ms` }}
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-ocean to-forest flex items-center justify-center shadow-ocean mb-5 group-hover:scale-110 group-hover:rotate-6 transition-all duration-400">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand to-sky flex items-center justify-center shadow-brand mb-5 group-hover:scale-110 group-hover:rotate-6 transition-all duration-400">
                     <Icon className="w-7 h-7 text-white" />
                   </div>
-                  <h3 className="font-serif text-xl font-bold text-navy mb-3">{item.title}</h3>
+                  <h3 className="font-serif text-xl font-bold text-brand mb-3">{item.title}</h3>
                   <p className="text-slate-600 leading-relaxed">{item.desc}</p>
                 </div>
               );
@@ -333,11 +331,11 @@ export function HomePage({ onNavigate }: HomeProps) {
             alt=""
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-navy/95 via-navy/80 to-ocean/70"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-brand/95 via-brand/80 to-sky/70"></div>
         </div>
         <div className="relative z-10 max-w-4xl mx-auto px-5 text-center text-white">
           <div className="reveal">
-            <Quote className="w-12 h-12 text-gold-light mx-auto mb-6 opacity-80" />
+            <Quote className="w-12 h-12 text-accent-light mx-auto mb-6 opacity-80" />
             <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight">
               Votre aventure à Kribi commence ici
             </h2>
@@ -347,7 +345,7 @@ export function HomePage({ onNavigate }: HomeProps) {
             <div className="mt-9 flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={() => onNavigate('contact')}
-                className="btn-shimmer text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 shadow-ocean group"
+                className="btn-shimmer text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 shadow-accent group"
               >
                 Réserver maintenant <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>

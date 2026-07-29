@@ -18,6 +18,12 @@ export function AccommodationsPage({ onNavigate }: AccommodationsProps) {
   const filtered = filter === 'Tous' ? ACCOMMODATIONS : ACCOMMODATIONS.filter((a) => a.type === filter);
 
   const handleBook = (id: number) => {
+    const acc = ACCOMMODATIONS.find((a) => a.id === id);
+    if (acc) {
+      const msg = `Bonjour StayEatSee+, je souhaite réserver l'hébergement "${acc.title}" (prix : ${acc.price} FCFA/nuit). Pouvez-vous me donner plus d'informations ?`;
+      const url = `https://wa.me/237688150361?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
     setBooked(id);
     setTimeout(() => setBooked(null), 3000);
   };
@@ -40,8 +46,8 @@ export function AccommodationsPage({ onNavigate }: AccommodationsProps) {
               onClick={() => setFilter(type)}
               className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
                 filter === type
-                  ? 'btn-green-shimmer text-white shadow-forest'
-                  : 'bg-slate-100 text-slate-700 hover:bg-forest-pale hover:text-forest'
+                  ? 'btn-brand-shimmer text-white shadow-brand'
+                  : 'bg-slate-100 text-slate-700 hover:bg-brand-pale hover:text-brand'
               }`}
             >
               {type}
@@ -62,31 +68,31 @@ export function AccommodationsPage({ onNavigate }: AccommodationsProps) {
               >
                 <div className="img-zoom relative h-60 overflow-hidden">
                   <img src={acc.image} alt={acc.title} className="w-full h-full object-cover" />
-                  <div className="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full text-xs font-bold text-navy">
+                  <div className="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full text-xs font-bold text-brand">
                     {acc.type}
                   </div>
                   <div className="absolute top-3 right-3 glass-dark rounded-full px-3 py-1.5 flex items-center gap-1.5 text-white text-xs font-semibold">
-                    <Star className="w-3.5 h-3.5 text-gold-light fill-gold-light" /> {acc.rating}
+                    <Star className="w-3.5 h-3.5 text-accent-light fill-accent-light" /> {acc.rating}
                     <span className="text-white/60 font-normal">({acc.reviews})</span>
                   </div>
                 </div>
                 <div className="p-6">
-                  <h3 className="font-serif text-xl font-bold text-navy">{acc.title}</h3>
+                  <h3 className="font-serif text-xl font-bold text-brand">{acc.title}</h3>
                   <p className="text-slate-600 text-sm mt-2 leading-relaxed">{acc.description}</p>
                   <AccommodationFeatures features={acc.features} />
                   <div className="flex items-center justify-between mt-5 pt-5 border-t border-slate-100">
                     <div>
-                      <span className="text-2xl font-bold text-ocean">{acc.price}</span>
+                      <span className="text-2xl font-bold text-accent">{acc.price}</span>
                       <span className="text-slate-500 text-sm"> FCFA/nuit</span>
                     </div>
                     {booked === acc.id ? (
-                      <span className="flex items-center gap-1.5 text-forest font-semibold text-sm animate-scale-in">
+                      <span className="flex items-center gap-1.5 text-sky font-semibold text-sm animate-scale-in">
                         <CheckCircle2 className="w-4 h-4" /> Réservé !
                       </span>
                     ) : (
                       <button
                         onClick={() => handleBook(acc.id)}
-                        className="bg-forest text-white px-4 py-2.5 rounded-full text-sm font-semibold hover:bg-forest-dark transition-all flex items-center gap-1.5 group"
+                        className="bg-accent text-white px-4 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark transition-all flex items-center gap-1.5 group"
                       >
                         Réserver <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                       </button>
@@ -108,7 +114,7 @@ export function AccommodationsPage({ onNavigate }: AccommodationsProps) {
               { num: '100%', label: 'Logements visités' },
               { num: '0€', label: 'Frais de réservation' },
             ].map((item, i) => (
-              <div key={i} className="bg-gradient-to-br from-ocean-pale to-forest-pale rounded-3xl p-8">
+              <div key={i} className="bg-gradient-to-br from-sky-pale to-accent-pale rounded-3xl p-8">
                 <div className="font-serif text-5xl font-bold gradient-text">{item.num}</div>
                 <p className="text-slate-600 mt-3 font-medium">{item.label}</p>
               </div>

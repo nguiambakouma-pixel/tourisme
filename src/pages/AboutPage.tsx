@@ -4,22 +4,22 @@ import { TEAM } from '@/data';
 import { usePageMeta, useScrollReveal } from '@/hooks';
 
 const VALUES = [
-  { icon: Heart,     title: 'Authenticité',  desc: 'Nous préservons et valorisons la culture locale de Kribi, sans artifice.' },
-  { icon: Leaf,      title: 'Durabilité',    desc: 'Tourisme responsable, respectueux de l\'environnement et des communautés.' },
-  { icon: Award,     title: 'Excellence',    desc: 'Une exigence sans compromis sur la qualité de chaque service.' },
-  { icon: Users,     title: 'Communauté',    desc: 'Nous soutenons l\'économie locale et les familles de pêcheurs.' },
+  { icon: Heart,  title: 'Authenticité', desc: "Nous préservons et valorisons la culture locale de Kribi, sans artifice." },
+  { icon: Leaf,   title: 'Durabilité',   desc: "Tourisme responsable, respectueux de l'environnement et des communautés." },
+  { icon: Award,  title: 'Excellence',   desc: "Une exigence sans compromis sur la qualité de chaque service." },
+  { icon: Users,  title: 'Communauté',   desc: "Nous soutenons l'économie locale et les familles de pêcheurs." },
 ];
 
 const TIMELINE = [
-  { year: '2018', title: 'L\'idée germe', desc: 'Émile, originaire de Kribi, constate que sa région manque d\'une offre touristique premium et authentique.' },
-  { year: '2019', title: 'Première expérience', desc: 'Lancement de la première excursion aux Chutes de la Lobé avec 5 voyageurs pionniers.' },
-  { year: '2020', title: 'Création de StayEatSee+', desc: 'La marque voit le jour : « Stay » (loger), « Eat » (manger), « See » (voir). Le concept est né.' },
-  { year: '2022', title: 'Expansion', desc: 'Ouverture des hébergements et de 40+ expériences. Cap des 1000 voyageurs franchi.' },
-  { year: '2025', title: 'Aujourd\'hui', desc: 'Plus de 1500 voyageurs satisfaits, 15 guides locaux et une référence du tourisme à Kribi.' },
+  { year: '2018', title: "L'idée germe",           desc: "Émile, originaire de Kribi, constate que sa région manque d'une offre touristique premium et authentique." },
+  { year: '2019', title: 'Première expérience',    desc: 'Lancement de la première excursion aux Chutes de la Lobé avec 5 voyageurs pionniers.' },
+  { year: '2020', title: 'Création de StayEatSee+',desc: "La marque voit le jour : « Stay » (loger), « Eat » (manger), « See » (voir). Le concept est né." },
+  { year: '2022', title: 'Expansion',              desc: "Ouverture des hébergements et de 40+ expériences. Cap des 1000 voyageurs franchi." },
+  { year: '2025', title: "Aujourd'hui",            desc: 'Plus de 1500 voyageurs satisfaits, 15 guides locaux et une référence du tourisme à Kribi.' },
 ];
 
 export function AboutPage() {
-  usePageMeta('À propos | StayEatSee+', 'Découvrez l\'histoire, la mission et l\'équipe de StayEatSee+, agence touristique premium née à Kribi, Cameroun.');
+  usePageMeta("À propos | StayEatSee+", "Découvrez l'histoire, la mission et l'équipe de StayEatSee+, agence touristique premium née à Kribi, Cameroun.");
   useScrollReveal();
   return (
     <div className="page-enter">
@@ -36,7 +36,7 @@ export function AboutPage() {
           <div className="grid lg:grid-cols-2 gap-14 items-center">
             <div className="reveal-left">
               <span className="section-badge mb-4">Notre histoire</span>
-              <h2 className="font-serif text-4xl md:text-5xl font-bold text-navy mt-4 leading-tight">
+              <h2 className="font-serif text-4xl md:text-5xl font-bold text-brand mt-4 leading-tight">
                 Né à Kribi, fait pour le monde
               </h2>
               <div className="mt-6 space-y-4 text-slate-600 leading-relaxed">
@@ -74,12 +74,13 @@ export function AboutPage() {
       </section>
 
       {/* Mission / Vision */}
-      <section className="py-22 bg-navy relative overflow-hidden">
-        <div className="absolute -top-20 left-1/4 w-80 h-80 rounded-full bg-ocean/30 blur-3xl"></div>
+      <section className="py-22 bg-brand relative overflow-hidden">
+        <div className="absolute -top-20 left-1/4 w-80 h-80 rounded-full bg-sky/25 blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-64 h-64 rounded-full bg-accent/15 blur-3xl"></div>
         <div className="max-w-5xl mx-auto px-5 lg:px-8 relative z-10">
           <div className="grid md:grid-cols-2 gap-8">
             <div className="reveal-left glass-dark rounded-3xl p-9">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-ocean to-ocean-light flex items-center justify-center mb-5">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky to-sky-light flex items-center justify-center mb-5">
                 <Compass className="w-7 h-7 text-white" />
               </div>
               <h3 className="font-serif text-2xl font-bold text-white mb-4">Notre mission</h3>
@@ -89,7 +90,7 @@ export function AboutPage() {
               </p>
             </div>
             <div className="reveal-right glass-dark rounded-3xl p-9">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-forest to-forest-light flex items-center justify-center mb-5">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-accent-light flex items-center justify-center mb-5">
                 <Eye className="w-7 h-7 text-white" />
               </div>
               <h3 className="font-serif text-2xl font-bold text-white mb-4">Notre vision</h3>
@@ -115,10 +116,10 @@ export function AboutPage() {
                   className="reveal-scale text-center bg-white rounded-3xl p-8 shadow-lg card-hover"
                   style={{ transitionDelay: `${i * 90}ms` }}
                 >
-                  <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-ocean to-forest flex items-center justify-center shadow-ocean mb-5">
+                  <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-brand to-sky flex items-center justify-center shadow-brand mb-5">
                     <Icon className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="font-serif text-lg font-bold text-navy mb-2">{v.title}</h3>
+                  <h3 className="font-serif text-lg font-bold text-brand mb-2">{v.title}</h3>
                   <p className="text-slate-600 text-sm leading-relaxed">{v.desc}</p>
                 </div>
               );
@@ -143,17 +144,17 @@ export function AboutPage() {
                     {i % 2 === 0 ? (
                       <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-100">
                         <span className="text-3xl font-bold gradient-text">{item.year}</span>
-                        <h3 className="font-serif text-lg font-bold text-navy mt-2">{item.title}</h3>
+                        <h3 className="font-serif text-lg font-bold text-brand mt-2">{item.title}</h3>
                         <p className="text-slate-600 text-sm mt-2">{item.desc}</p>
                       </div>
                     ) : <div />}
                   </div>
-                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-ocean to-forest ring-4 ring-white shadow-ocean shrink-0 z-10"></div>
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-brand to-sky ring-4 ring-white shadow-brand shrink-0 z-10"></div>
                   <div className="flex-1">
                     {i % 2 !== 0 ? (
                       <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-100">
                         <span className="text-3xl font-bold gradient-text">{item.year}</span>
-                        <h3 className="font-serif text-lg font-bold text-navy mt-2">{item.title}</h3>
+                        <h3 className="font-serif text-lg font-bold text-brand mt-2">{item.title}</h3>
                         <p className="text-slate-600 text-sm mt-2">{item.desc}</p>
                       </div>
                     ) : <div />}
@@ -166,7 +167,7 @@ export function AboutPage() {
       </section>
 
       {/* Team */}
-      <section className="py-22 bg-gradient-to-br from-ocean-pale to-forest-pale">
+      <section className="py-22 bg-gradient-to-br from-sky-pale to-brand-pale">
         <div className="max-w-7xl mx-auto px-5 lg:px-8">
           <SectionTitle center badge="L'équipe" title="Des passionnés, pas des employés" subtitle="Quatre personnes qui font de StayEatSee+ une référence." />
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-7">
@@ -180,8 +181,8 @@ export function AboutPage() {
                   <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-6 text-center">
-                  <h3 className="font-serif text-lg font-bold text-navy">{member.name}</h3>
-                  <p className="text-ocean font-semibold text-sm mt-1">{member.role}</p>
+                  <h3 className="font-serif text-lg font-bold text-brand">{member.name}</h3>
+                  <p className="text-sky font-semibold text-sm mt-1">{member.role}</p>
                   <p className="text-slate-600 text-sm mt-3 leading-relaxed">{member.bio}</p>
                 </div>
               </div>

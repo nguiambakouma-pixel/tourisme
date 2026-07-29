@@ -17,6 +17,12 @@ export function ExperiencesPage({ onNavigate }: ExperiencesProps) {
   const filtered = filter === 'Tous' ? EXPERIENCES : EXPERIENCES.filter((e) => e.category === filter);
 
   const handleBook = (id: number) => {
+    const exp = EXPERIENCES.find((e) => e.id === id);
+    if (exp) {
+      const msg = `Bonjour StayEatSee+, je souhaite réserver l'expérience "${exp.title}" (prix : ${exp.price} FCFA). Pouvez-vous me donner plus d'informations ?`;
+      const url = `https://wa.me/237688150361?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
     setBooked(id);
     setTimeout(() => setBooked(null), 3000);
   };
@@ -39,8 +45,8 @@ export function ExperiencesPage({ onNavigate }: ExperiencesProps) {
               onClick={() => setFilter(cat)}
               className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
                 filter === cat
-                  ? 'btn-shimmer text-white shadow-ocean'
-                  : 'bg-slate-100 text-slate-700 hover:bg-ocean-pale hover:text-ocean'
+                  ? 'btn-shimmer text-white shadow-accent'
+                  : 'bg-slate-100 text-slate-700 hover:bg-sky-pale hover:text-sky'
               }`}
             >
               {cat}
@@ -50,7 +56,7 @@ export function ExperiencesPage({ onNavigate }: ExperiencesProps) {
       </section>
 
       {/* Grid */}
-      <section className="py-22 bg-gradient-to-b from-white to-ocean-pale/30">
+      <section className="py-22 bg-gradient-to-b from-white to-sky-pale/30">
         <div className="max-w-7xl mx-auto px-5 lg:px-8">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
             {filtered.map((exp, i) => (
@@ -71,22 +77,22 @@ export function ExperiencesPage({ onNavigate }: ExperiencesProps) {
                   </div>
                 </div>
                 <div className="p-6">
-                  <span className="text-xs font-bold text-forest tracking-wider uppercase">{exp.category}</span>
-                  <h3 className="font-serif text-xl font-bold text-navy mt-2">{exp.title}</h3>
+                  <span className="text-xs font-bold text-sky tracking-wider uppercase">{exp.category}</span>
+                  <h3 className="font-serif text-xl font-bold text-brand mt-2">{exp.title}</h3>
                   <p className="text-slate-600 text-sm mt-2 leading-relaxed">{exp.description}</p>
                   <div className="flex items-center justify-between mt-5 pt-5 border-t border-slate-100">
                     <div>
-                      <span className="text-2xl font-bold text-ocean">{exp.price}</span>
+                      <span className="text-2xl font-bold text-accent">{exp.price}</span>
                       <span className="text-slate-500 text-sm"> FCFA</span>
                     </div>
                     {booked === exp.id ? (
-                      <span className="flex items-center gap-1.5 text-forest font-semibold text-sm animate-scale-in">
+                      <span className="flex items-center gap-1.5 text-sky font-semibold text-sm animate-scale-in">
                         <CheckCircle2 className="w-4 h-4" /> Réservé !
                       </span>
                     ) : (
                       <button
                         onClick={() => handleBook(exp.id)}
-                        className="bg-ocean-pale text-ocean px-4 py-2 rounded-full text-sm font-semibold hover:bg-ocean hover:text-white transition-all flex items-center gap-1.5 group"
+                        className="bg-accent-pale text-accent px-4 py-2 rounded-full text-sm font-semibold hover:bg-accent hover:text-white transition-all flex items-center gap-1.5 group"
                       >
                         Réserver <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                       </button>
@@ -100,13 +106,13 @@ export function ExperiencesPage({ onNavigate }: ExperiencesProps) {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-gradient-ocean text-white text-center">
+      <section className="py-20 bg-gradient-brand text-white text-center">
         <div className="max-w-3xl mx-auto px-5 reveal">
           <h2 className="font-serif text-3xl md:text-4xl font-bold">Une expérience sur mesure ?</h2>
           <p className="mt-4 text-white/85 text-lg">Contactez-nous et créons ensemble votre aventure idéale à Kribi.</p>
           <button
             onClick={() => onNavigate('contact')}
-            className="mt-7 bg-white text-ocean px-8 py-4 rounded-full font-semibold hover:bg-gold-light hover:text-navy transition-all duration-300 inline-flex items-center gap-2 group"
+            className="mt-7 bg-white text-brand px-8 py-4 rounded-full font-semibold hover:bg-accent-light hover:text-white transition-all duration-300 inline-flex items-center gap-2 group"
           >
             Nous contacter <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>

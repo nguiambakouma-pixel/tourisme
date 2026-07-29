@@ -47,8 +47,8 @@ export function GalleryPage() {
               onClick={() => setFilter(cat)}
               className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
                 filter === cat
-                  ? 'btn-shimmer text-white shadow-ocean'
-                  : 'bg-slate-100 text-slate-700 hover:bg-ocean-pale hover:text-ocean'
+                  ? 'btn-shimmer text-white shadow-accent'
+                  : 'bg-slate-100 text-slate-700 hover:bg-sky-pale hover:text-sky'
               }`}
             >
               {cat}
@@ -69,9 +69,9 @@ export function GalleryPage() {
                 onClick={() => openLightbox(img.id)}
               >
                 <img src={img.src} alt={img.alt} loading="lazy" className="w-full h-auto block" />
-                <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-end justify-between p-5">
+                <div className="absolute inset-0 bg-gradient-to-t from-brand/80 via-brand/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-end justify-between p-5">
                   <div>
-                    <span className="text-xs text-gold-light font-bold tracking-wider uppercase">{img.cat}</span>
+                    <span className="text-xs text-accent-light font-bold tracking-wider uppercase">{img.cat}</span>
                     <p className="text-white font-semibold mt-1">{img.alt}</p>
                   </div>
                   <div className="w-10 h-10 rounded-full glass flex items-center justify-center">
@@ -104,7 +104,7 @@ export function GalleryPage() {
             <ChevronRight className="w-6 h-6 text-white" />
           </button>
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 glass-dark rounded-full px-5 py-2.5">
-            <span className="text-xs text-gold-light font-bold tracking-wider uppercase mr-3">{current.cat}</span>
+            <span className="text-xs text-accent-light font-bold tracking-wider uppercase mr-3">{current.cat}</span>
             <span className="text-white font-medium">{current.alt}</span>
           </div>
         </div>
