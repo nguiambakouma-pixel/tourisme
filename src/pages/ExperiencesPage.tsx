@@ -99,12 +99,12 @@ export function ExperiencesPage({ onNavigate }: ExperiencesProps) {
                   </div>
                 </div>
                 <div className="p-6">
-                  <span className="text-xs font-bold text-sky tracking-wider uppercase">{exp.category}</span>
-                  <h3 className="font-serif text-xl font-bold text-brand mt-2">{exp.title}</h3>
+                  <span className="cat-label">{exp.category}</span>
+                  <h3 className="font-serif text-xl text-brand mt-2">{exp.title}</h3>
                   <p className="text-slate-600 text-sm mt-2 leading-relaxed">{exp.description}</p>
                   <div className="flex items-center justify-between mt-5 pt-5 border-t border-slate-100">
                     <div>
-                      <span className="text-2xl font-bold text-accent">{exp.price}</span>
+                      <span className="price-luxury">{exp.price}</span>
                       <span className="text-slate-500 text-sm"> FCFA</span>
                     </div>
                     {booked === exp.id ? (

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { MapPin, Mail, Phone, Instagram, Facebook, Twitter, Youtube, Send, Heart } from 'lucide-react';
 import { NAV_LINKS, socials } from '@/data';
@@ -21,7 +22,7 @@ export function Footer({ onNavigate }: FooterProps) {
   };
 
   return (
-    <footer className="bg-brand text-white relative overflow-hidden">
+    <footer className="bg-brand-light text-white relative overflow-hidden">
       {/* Orbes de fond */}
       <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-sky/25 blur-3xl pointer-events-none"></div>
       <div className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-accent/20 blur-3xl pointer-events-none"></div>
@@ -59,7 +60,7 @@ export function Footer({ onNavigate }: FooterProps) {
 
           {/* Quick links */}
           <div>
-            <h4 className="text-base font-bold mb-5 text-accent-light">Liens rapides</h4>
+            <h4 className="font-serif text-lg font-semibold mb-6 text-accent-light tracking-wide">Liens rapides</h4>
             <ul className="space-y-3">
               {NAV_LINKS.map((link) => (
                 <li key={link.page}>
@@ -77,7 +78,7 @@ export function Footer({ onNavigate }: FooterProps) {
 
           {/* Contact */}
           <div>
-            <h4 className="text-base font-bold mb-5 text-accent-light">Contact</h4>
+            <h4 className="font-serif text-lg font-semibold mb-6 text-accent-light tracking-wide">Contact</h4>
             <ul className="space-y-4 text-sm">
               <li className="flex items-start gap-3 text-white/70">
                 <MapPin className="w-5 h-5 text-sky-light shrink-0 mt-0.5" />
@@ -100,7 +101,7 @@ export function Footer({ onNavigate }: FooterProps) {
 
           {/* Newsletter */}
           <div>
-            <h4 className="text-base font-bold mb-5 text-accent-light">Newsletter</h4>
+            <h4 className="font-serif text-lg font-semibold mb-6 text-accent-light tracking-wide">Newsletter</h4>
             <p className="text-white/70 text-sm mb-4">
               Recevez nos meilleures offres et inspirations de voyage directement par email.
             </p>

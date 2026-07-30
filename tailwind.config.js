@@ -12,9 +12,26 @@ export default {
         sand:   { DEFAULT: '#F5E6D3', dark: '#E8C9A0', light: '#FAF2E8' },
       },
       fontFamily: {
-        sans:  ['Poppins', 'system-ui', 'sans-serif'],
-        serif: ['Playfair Display', 'Georgia', 'serif'],
+        sans:  ['Manrope', 'system-ui', 'sans-serif'],
+        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
         display: ['Cormorant Garamond', 'Georgia', 'serif'],
+      },
+      fontSize: {
+        // Luxury typography scale
+        'display-1': ['76px', { lineHeight: '1.05', fontWeight: '600' }],
+        'display-2': ['56px', { lineHeight: '1.1', fontWeight: '600' }],
+        'display-3': ['36px', { lineHeight: '1.15', fontWeight: '600' }],
+        'display-4': ['28px', { lineHeight: '1.2', fontWeight: '600' }],
+        'body-lg':   ['22px', { lineHeight: '1.7' }],
+        'body':      ['18px', { lineHeight: '1.8' }],
+        'small':     ['16px', { lineHeight: '1.7' }],
+        'caption':   ['14px', { lineHeight: '1.6' }],
+      },
+      letterSpacing: {
+        'luxury': '0.02em',
+        'wide-lux': '0.08em',
+        'label': '0.35em',
+        'cat': '0.25em',
       },
       boxShadow: {
         'brand':  '0 8px 32px rgba(26,60,122,0.28)',

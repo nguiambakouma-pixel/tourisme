@@ -36,7 +36,7 @@ export function AboutPage() {
           <div className="grid lg:grid-cols-2 gap-14 items-center">
             <div className="reveal-left">
               <span className="section-badge mb-4">Notre histoire</span>
-              <h2 className="font-serif text-4xl md:text-5xl font-bold text-brand mt-4 leading-tight">
+              <h2 className="font-serif text-4xl md:text-5xl font-semibold text-brand mt-4 leading-tight tracking-tight">
                 Né à Kribi, fait pour le monde
               </h2>
               <div className="mt-6 space-y-4 text-slate-600 leading-relaxed">
@@ -83,7 +83,7 @@ export function AboutPage() {
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky to-sky-light flex items-center justify-center mb-5">
                 <Compass className="w-7 h-7 text-white" />
               </div>
-              <h3 className="font-serif text-2xl font-bold text-white mb-4">Notre mission</h3>
+              <h3 className="font-serif text-2xl font-semibold text-white mb-4">Notre mission</h3>
               <p className="text-white/80 leading-relaxed">
                 Révéler Kribi au monde en proposant des expériences touristiques premium, authentiques et durables,
                 qui valorisent les communautés locales et préservent l'environnement naturel du Cameroun.
@@ -93,7 +93,7 @@ export function AboutPage() {
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-accent-light flex items-center justify-center mb-5">
                 <Eye className="w-7 h-7 text-white" />
               </div>
-              <h3 className="font-serif text-2xl font-bold text-white mb-4">Notre vision</h3>
+              <h3 className="font-serif text-2xl font-semibold text-white mb-4">Notre vision</h3>
               <p className="text-white/80 leading-relaxed">
                 Faire de Kribi une destination de référence en Afrique centrale, reconnue internationalement
                 pour la qualité de ses expériences et l'authenticité de sa culture, tout en restant fidèle à ses racines.
@@ -119,7 +119,7 @@ export function AboutPage() {
                   <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-brand to-sky flex items-center justify-center shadow-brand mb-5">
                     <Icon className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="font-serif text-lg font-bold text-brand mb-2">{v.title}</h3>
+                  <h3 className="font-serif text-lg text-brand mb-2">{v.title}</h3>
                   <p className="text-slate-600 text-sm leading-relaxed">{v.desc}</p>
                 </div>
               );
@@ -144,7 +144,7 @@ export function AboutPage() {
                     {i % 2 === 0 ? (
                       <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-100">
                         <span className="text-3xl font-bold gradient-text">{item.year}</span>
-                        <h3 className="font-serif text-lg font-bold text-brand mt-2">{item.title}</h3>
+                        <h3 className="font-serif text-lg text-brand mt-2">{item.title}</h3>
                         <p className="text-slate-600 text-sm mt-2">{item.desc}</p>
                       </div>
                     ) : <div />}
@@ -154,7 +154,7 @@ export function AboutPage() {
                     {i % 2 !== 0 ? (
                       <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-100">
                         <span className="text-3xl font-bold gradient-text">{item.year}</span>
-                        <h3 className="font-serif text-lg font-bold text-brand mt-2">{item.title}</h3>
+                        <h3 className="font-serif text-lg text-brand mt-2">{item.title}</h3>
                         <p className="text-slate-600 text-sm mt-2">{item.desc}</p>
                       </div>
                     ) : <div />}
@@ -181,7 +181,7 @@ export function AboutPage() {
                   <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-6 text-center">
-                  <h3 className="font-serif text-lg font-bold text-brand">{member.name}</h3>
+                  <h3 className="font-serif text-lg text-brand">{member.name}</h3>
                   <p className="text-sky font-semibold text-sm mt-1">{member.role}</p>
                   <p className="text-slate-600 text-sm mt-3 leading-relaxed">{member.bio}</p>
                 </div>

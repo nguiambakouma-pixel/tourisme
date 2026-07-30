@@ -6,8 +6,48 @@
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Manrope', system-ui, sans-serif;
     @apply text-slate-800 bg-white antialiased;
+  }
+
+  /* ── Luxury Typography Scale ───────────────────────────────── */
+  h1, h2, h3, h4 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 6vw, 4.75rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    font-size: clamp(2rem, 4.5vw, 3.5rem);
+    font-weight: 600;
+    line-height: 1.1;
+  }
+
+  h3 {
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 600;
+    line-height: 1.15;
+  }
+
+  h4 {
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  p {
+    font-family: 'Manrope', system-ui, sans-serif;
+    line-height: 1.8;
+    max-width: 650px;
+  }
+
+  button {
+    font-family: 'Manrope', system-ui, sans-serif;
   }
 }
 
@@ -189,6 +229,9 @@
 .btn-shimmer {
   background: linear-gradient(90deg, #D4572A 0%, #E87A50 50%, #D4572A 100%);
   background-size: 200% auto;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.03em;
   transition: background-position 0.5s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 .btn-shimmer:hover {
@@ -201,6 +244,9 @@
 .btn-sky-shimmer {
   background: linear-gradient(90deg, #3EABD4 0%, #6DC4E4 50%, #3EABD4 100%);
   background-size: 200% auto;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.03em;
   transition: background-position 0.5s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 .btn-sky-shimmer:hover {
@@ -213,6 +259,9 @@
 .btn-brand-shimmer {
   background: linear-gradient(90deg, #1A3C7A 0%, #254FA3 50%, #1A3C7A 100%);
   background-size: 200% auto;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.03em;
   transition: background-position 0.5s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 .btn-brand-shimmer:hover {
@@ -304,18 +353,46 @@
   opacity: 0;
 }
 
-/* ── Section badge ─────────────────────────────────────────── */
+/* ── Section badge / Luxury label ──────────────────────────── */
 .section-badge {
   display: inline-block;
   background: linear-gradient(135deg, rgba(62,171,212,0.12), rgba(212,87,42,0.10));
   border: 1px solid rgba(62,171,212,0.25);
   color: #2A87AD;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.35em;
   text-transform: uppercase;
   padding: 6px 18px;
   border-radius: 999px;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Luxury price styling ──────────────────────────────────── */
+.price-luxury {
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: 0.01em;
+  color: #D4572A;
+}
+
+/* ── Card category label ───────────────────────────────────── */
+.cat-label {
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #3EABD4;
+}
+
+/* ── Navbar link ───────────────────────────────────────────── */
+.nav-link {
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }
 
 /* ── Parallax ──────────────────────────────────────────────── */

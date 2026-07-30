@@ -72,7 +72,7 @@ export function ContactPage() {
             {/* Form */}
             <div className="reveal-left">
               <span className="section-badge mb-4">Écrivez-nous</span>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-brand mt-4 mb-8 leading-tight">
+              <h2 className="font-serif text-3xl md:text-4xl font-semibold text-brand mt-4 mb-8 leading-tight tracking-tight">
                 Envoyez-nous un message
               </h2>
 
@@ -81,7 +81,7 @@ export function ContactPage() {
                   <div className="w-16 h-16 mx-auto rounded-full bg-sky flex items-center justify-center mb-4">
                     <CheckCircle2 className="w-9 h-9 text-white" />
                   </div>
-                  <h3 className="font-serif text-2xl font-bold text-brand mb-2">Message envoyé !</h3>
+                  <h3 className="font-serif text-2xl font-semibold text-brand mb-2">Message envoyé !</h3>
                   <p className="text-slate-600">Votre message a bien été envoyé. Nous vous répondrons dans les plus brefs délais.</p>
                 </div>
               ) : (
@@ -131,7 +131,7 @@ export function ContactPage() {
                       <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand to-sky flex items-center justify-center mb-3">
                         <Icon className="w-5 h-5 text-white" />
                       </div>
-                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{info.label}</p>
+                      <p className="cat-label text-slate-500">{info.label}</p>
                       <p className="text-brand font-semibold mt-1">{info.value}</p>
                     </div>
                   );
@@ -149,7 +149,7 @@ export function ContactPage() {
                   <MessageCircle className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <p className="font-serif text-lg font-bold">WhatsApp direct</p>
+                  <p className="font-serif text-lg font-semibold">WhatsApp direct</p>
                   <p className="text-white/85 text-sm">Discutez avec nous en temps réel</p>
                 </div>
               </a>
@@ -171,7 +171,7 @@ export function ContactPage() {
                   <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-brand to-sky flex items-center justify-center animate-pulse-ring shadow-xl2">
                     <MapPin className="w-8 h-8 text-white" />
                   </div>
-                  <p className="mt-3 font-serif text-lg font-bold text-brand">Kribi, Cameroun</p>
+                  <p className="mt-3 font-serif text-lg text-brand">Kribi, Cameroun</p>
                   <p className="text-slate-600 text-sm">Avenue du Port</p>
                 </div>
               </div>

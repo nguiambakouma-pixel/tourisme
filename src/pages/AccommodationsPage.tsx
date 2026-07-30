@@ -99,12 +99,12 @@ export function AccommodationsPage({ onNavigate }: AccommodationsProps) {
                   </div>
                 </div>
                 <div className="p-6">
-                  <h3 className="font-serif text-xl font-bold text-brand">{acc.title}</h3>
+                  <h3 className="font-serif text-xl text-brand">{acc.title}</h3>
                   <p className="text-slate-600 text-sm mt-2 leading-relaxed">{acc.description}</p>
                   <AccommodationFeatures features={acc.features} />
                   <div className="flex items-center justify-between mt-5 pt-5 border-t border-slate-100">
                     <div>
-                      <span className="text-2xl font-bold text-accent">{acc.price}</span>
+                      <span className="price-luxury">{acc.price}</span>
                       <span className="text-slate-500 text-sm"> FCFA/nuit</span>
                     </div>
                     {booked === acc.id ? (

@@ -9,12 +9,12 @@ interface SectionTitleProps {
 export function SectionTitle({ badge, title, subtitle, center, light }: SectionTitleProps) {
   return (
     <div className={`reveal ${center ? 'text-center mx-auto max-w-2xl' : 'max-w-xl'} mb-12`}>
-      {badge && <span className="section-badge mb-4">{badge}</span>}
-      <h2 className={`font-serif text-4xl md:text-5xl font-bold mt-4 leading-tight ${light ? 'text-white' : 'text-brand'}`}>
+      {badge && <span className="section-badge mb-6">{badge}</span>}
+      <h2 className={`font-serif text-4xl md:text-5xl font-semibold leading-tight tracking-tight ${light ? 'text-white' : 'text-brand'}`}>
         {title}
       </h2>
       {subtitle && (
-        <p className={`mt-4 text-lg leading-relaxed ${light ? 'text-white/80' : 'text-slate-600'}`}>
+        <p className={`mt-5 text-lg leading-relaxed max-w-[650px] ${light ? 'text-white/80' : 'text-slate-600'}`}>
           {subtitle}
         </p>
       )}
@@ -88,8 +88,8 @@ export function PageHero({ badge, title, subtitle, image }: PageHeroProps) {
         <span className="section-badge mb-5" style={{ background: 'rgba(255,255,255,0.15)', borderColor: 'rgba(255,255,255,0.25)', color: '#fff' }}>
           {badge}
         </span>
-        <h1 className="font-serif text-4xl md:text-6xl font-bold text-white leading-tight">{title}</h1>
-        <p className="mt-5 text-lg md:text-xl text-white/85 leading-relaxed">{subtitle}</p>
+        <h1 className="font-serif text-4xl md:text-6xl font-semibold text-white leading-tight tracking-tight">{title}</h1>
+        <p className="mt-5 text-lg md:text-xl text-white/85 leading-relaxed max-w-[650px] mx-auto">{subtitle}</p>
       </div>
     </section>
   );

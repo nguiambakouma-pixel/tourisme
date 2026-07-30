@@ -88,7 +88,7 @@ export function BlogPage() {
                     <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> {post.date}</span>
                     <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {post.readTime}</span>
                   </div>
-                  <h3 className="font-serif text-lg font-bold text-brand leading-tight group-hover:text-sky transition-colors">{post.title}</h3>
+                  <h3 className="font-serif text-lg text-brand leading-tight group-hover:text-sky transition-colors">{post.title}</h3>
                   <p className="text-slate-600 text-sm mt-2 leading-relaxed line-clamp-2">{post.excerpt}</p>
                   <div className="flex items-center justify-between mt-5 pt-5 border-t border-slate-100">
                     <span className="flex items-center gap-2 text-xs text-slate-500">
@@ -128,7 +128,7 @@ export function BlogPage() {
                 <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> {selected.date}</span>
                 <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {selected.readTime}</span>
               </div>
-              <h2 className="font-serif text-3xl font-bold text-brand leading-tight">{selected.title}</h2>
+              <h2 className="font-serif text-3xl font-semibold text-brand leading-tight">{selected.title}</h2>
               <div className="flex items-center gap-2 text-sm text-slate-500 mt-3 mb-6">
                 <User className="w-4 h-4" /> Par {selected.author}
               </div>

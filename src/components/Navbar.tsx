@@ -90,7 +90,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
                   key={link.page}
                   onClick={() => handleNav(link.page)}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 ${
+                  className={`nav-link px-4 py-2 rounded-full text-sm transition-all duration-300 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 ${
                     isActive
                       ? 'text-white'
                       : 'text-white/85 hover:text-white hover:bg-white/10'
@@ -112,7 +112,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
           <div className="hidden lg:block">
             <button
               onClick={() => handleNav('contact')}
-              className="btn-shimmer text-white px-6 py-2.5 rounded-full text-sm font-semibold shadow-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
+              className="btn-shimmer text-white px-6 py-2.5 rounded-full text-sm shadow-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
             >
               Réserver maintenant
             </button>
@@ -145,7 +145,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
                   key={link.page}
                   onClick={() => handleNav(link.page)}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`px-4 py-3 rounded-2xl text-left font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 ${
+                  className={`nav-link px-4 py-3 rounded-2xl text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 ${
                     isActive
                       ? 'bg-white/15 text-white'
                       : 'text-white/85 hover:bg-white/10'

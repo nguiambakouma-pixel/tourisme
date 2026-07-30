@@ -71,7 +71,7 @@ export function GalleryPage() {
                 <img src={img.src} alt={img.alt} loading="lazy" className="w-full h-auto block" />
                 <div className="absolute inset-0 bg-gradient-to-t from-brand/80 via-brand/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-end justify-between p-5">
                   <div>
-                    <span className="text-xs text-accent-light font-bold tracking-wider uppercase">{img.cat}</span>
+                    <span className="cat-label text-accent-light">{img.cat}</span>
                     <p className="text-white font-semibold mt-1">{img.alt}</p>
                   </div>
                   <div className="w-10 h-10 rounded-full glass flex items-center justify-center">
@@ -104,7 +104,7 @@ export function GalleryPage() {
             <ChevronRight className="w-6 h-6 text-white" />
           </button>
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 glass-dark rounded-full px-5 py-2.5">
-            <span className="text-xs text-accent-light font-bold tracking-wider uppercase mr-3">{current.cat}</span>
+            <span className="text-xs font-semibold text-accent-light tracking-wider uppercase mr-3">{current.cat}</span>
             <span className="text-white font-medium">{current.alt}</span>
           </div>
         </div>

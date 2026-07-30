@@ -344,12 +344,12 @@ export function HomePage({ onNavigate }: HomeProps) {
                   </div>
                 </div>
                 <div className="p-6">
-                  <span className="text-xs font-bold text-sky tracking-wider uppercase">{exp.category}</span>
-                  <h3 className="font-serif text-xl font-bold text-brand mt-2">{exp.title}</h3>
+                  <span className="cat-label">{exp.category}</span>
+                  <h3 className="font-serif text-xl text-brand mt-2">{exp.title}</h3>
                   <p className="text-slate-600 text-sm mt-2 leading-relaxed line-clamp-2">{exp.description}</p>
                   <div className="flex items-center justify-between mt-5 pt-5 border-t border-slate-100">
                     <div>
-                      <span className="text-2xl font-bold text-accent">{exp.price}</span>
+                      <span className="price-luxury">{exp.price}</span>
                       <span className="text-slate-500 text-sm"> FCFA</span>
                     </div>
                     <button
@@ -414,12 +414,12 @@ export function HomePage({ onNavigate }: HomeProps) {
                   </div>
                 </div>
                 <div className="p-5">
-                  <h3 className="font-serif text-lg font-bold text-brand">{acc.title}</h3>
+                  <h3 className="font-serif text-lg text-brand">{acc.title}</h3>
                   <p className="text-slate-500 text-xs mt-1">{acc.reviews} avis</p>
                   <AccommodationFeatures features={acc.features} />
                   <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100">
                     <div>
-                      <span className="text-xl font-bold text-accent">{acc.price}</span>
+                      <span className="text-xl font-semibold text-accent">{acc.price}</span>
                       <span className="text-slate-500 text-xs"> /nuit</span>
                     </div>
                     <button
@@ -458,7 +458,7 @@ export function HomePage({ onNavigate }: HomeProps) {
                   <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand to-sky flex items-center justify-center shadow-brand mb-5 group-hover:scale-110 group-hover:rotate-6 transition-all duration-400">
                     <Icon className="w-7 h-7 text-white" />
                   </div>
-                  <h3 className="font-serif text-xl font-bold text-brand mb-3">{item.title}</h3>
+                  <h3 className="font-serif text-xl text-brand mb-3">{item.title}</h3>
                   <p className="text-slate-600 leading-relaxed">{item.desc}</p>
                 </div>
               );
@@ -483,7 +483,7 @@ export function HomePage({ onNavigate }: HomeProps) {
         <div className="relative z-10 max-w-4xl mx-auto px-5 text-center text-white">
           <div className="reveal">
             <Quote className="w-12 h-12 text-accent-light mx-auto mb-6 opacity-80" />
-            <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight">
+            <h2 className="font-serif text-4xl md:text-5xl font-semibold leading-tight tracking-tight">
               Votre aventure à Kribi commence ici
             </h2>
             <p className="mt-5 text-lg text-white/85 max-w-2xl mx-auto">
