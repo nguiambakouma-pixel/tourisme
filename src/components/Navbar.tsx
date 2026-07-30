@@ -13,7 +13,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
 
   /* ── Scroll listener ── */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
+    const onScroll = () => setScrolled(window.scrollY > 80);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -51,10 +51,29 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
           {/* ── Logo ── */}
           <button
             onClick={() => handleNav('home')}
-            className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 rounded-2xl"
+            className="flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 rounded-2xl"
             aria-label="Retour à l'accueil"
           >
-            <div className="text-left leading-none">
+            {/* Brand icon — appears on scroll with subtle zoom */}
+            <img
+              src="/web-app-manifest-512x512.png"
+              alt=""
+              className={`shrink-0 object-contain transition-all duration-[350ms] ease-in-out ${
+                scrolled
+                  ? 'opacity-100 w-8 h-8 scale-100 mr-2.5'
+                  : 'opacity-0 w-0 h-0 scale-75 mr-0'
+              }`}
+              aria-hidden={!scrolled}
+            />
+            {/* Text — fades and reduces size on scroll */}
+            <div
+              className={`text-left leading-none overflow-hidden whitespace-nowrap transition-all duration-[350ms] ease-in-out ${
+                scrolled
+                  ? 'opacity-0 scale-95 max-w-0'
+                  : 'opacity-100 scale-100 max-w-[300px]'
+              }`}
+              aria-hidden={scrolled || undefined}
+            >
               <span className="text-2xl font-extrabold tracking-tight leading-none">
                 <span className="text-brand">Stay</span><span className="text-accent">Eat</span><span className="text-sky">See</span><span className="text-accent">+</span>
               </span>

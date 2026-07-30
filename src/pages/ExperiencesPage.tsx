@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Clock, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Clock, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 import { PageHero, SectionTitle } from '@/components/ui';
-import { EXPERIENCES } from '@/data';
-import { usePageMeta, useScrollReveal } from '@/hooks';
+import { usePageMeta, useScrollReveal, useExperiences } from '@/hooks';
 
 interface ExperiencesProps { onNavigate: (page: string) => void }
 
@@ -11,6 +10,7 @@ const CATEGORIES = ['Tous', 'Aventure', 'Nautique', 'Nature', 'Culture', 'Gastro
 export function ExperiencesPage({ onNavigate }: ExperiencesProps) {
   usePageMeta('Nos Expériences | StayEatSee+', 'Douze expériences uniques à Kribi : quad, jet-ski, chutes de la Lobé, pêche artisanale, randonnée et plus encore.');
   useScrollReveal();
+  const { data: EXPERIENCES, loading, error } = useExperiences();
   const [filter, setFilter] = useState('Tous');
   const [booked, setBooked] = useState<number | null>(null);
 
@@ -55,7 +55,29 @@ export function ExperiencesPage({ onNavigate }: ExperiencesProps) {
         </div>
       </section>
 
+      {/* Loading state */}
+      {loading && (
+        <section className="py-22 bg-gradient-to-b from-white to-sky-pale/30">
+          <div className="max-w-7xl mx-auto px-5 lg:px-8 flex flex-col items-center justify-center py-20">
+            <Loader2 className="w-10 h-10 text-sky animate-spin mb-4" />
+            <p className="text-slate-500 font-medium">Chargement des expériences...</p>
+          </div>
+        </section>
+      )}
+
+      {/* Error state */}
+      {!loading && error && (
+        <section className="py-22 bg-gradient-to-b from-white to-sky-pale/30">
+          <div className="max-w-7xl mx-auto px-5 lg:px-8">
+            <div className="text-center py-20">
+              <p className="text-slate-500 font-medium">Impossible de charger les expériences pour le moment.</p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Grid */}
+      {!loading && !error && (
       <section className="py-22 bg-gradient-to-b from-white to-sky-pale/30">
         <div className="max-w-7xl mx-auto px-5 lg:px-8">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
@@ -104,8 +126,9 @@ export function ExperiencesPage({ onNavigate }: ExperiencesProps) {
           </div>
         </div>
       </section>
+      )}
 
-      {/* CTA */}
+      {/* CTA — always visible */}
       <section className="py-20 bg-gradient-brand text-white text-center">
         <div className="max-w-3xl mx-auto px-5 reveal">
           <h2 className="font-serif text-3xl md:text-4xl font-bold">Une expérience sur mesure ?</h2>

@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import {
   Search, MapPin, Star, ArrowRight, Compass, Clock, Shield, Headphones,
   BadgeCheck, Wallet, Sparkles, Quote,
 } from 'lucide-react';
-import { EXPERIENCES, ACCOMMODATIONS } from '@/data';
 import { SectionTitle } from '@/components/ui';
 import { AccommodationFeatures } from '@/components/AccommodationFeatures';
 import { Testimonials } from '@/components/Testimonials';
-import { useCounter, useInView, usePageMeta, useScrollReveal } from '@/hooks';
+import { useCounter, useInView, usePageMeta, useScrollReveal, useExperiences, useAccommodations } from '@/hooks';
 
 interface HomeProps { onNavigate: (page: string) => void }
 
@@ -36,9 +36,38 @@ const WHY_US = [
 export function HomePage({ onNavigate }: HomeProps) {
   usePageMeta('StayEatSee+ | Explorez Kribi Autrement', 'Vivez des expériences authentiques entre mer, forêt et culture locale à Kribi, Cameroun. Excursions, hébergements et gastronomie locale.');
   useScrollReveal();
+  const { data: EXPERIENCES, loading: expLoading, error: expError } = useExperiences();
+  const { data: ACCOMMODATIONS, loading: accLoading, error: accError } = useAccommodations();
   const [searchValue, setSearchValue] = useState('');
   const [searchDone, setSearchDone] = useState(false);
   const { ref: statsRef, inView: statsInView } = useInView(0.3);
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const dx = (e.clientX / window.innerWidth - 0.5) * 12;
+      const dy = (e.clientY / window.innerHeight - 0.5) * 12;
+      setMousePos({ x: dx, y: dy });
+    };
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  const parallaxOffset = Math.min(scrollY * 0.15, 20);
+  const videoParallax = Math.min(scrollY * 0.05, 8);
+  const textOpacity = 1 - Math.min(scrollY / 1200, 0.08);
+
+  const scrollToNext = () => {
+    window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +80,10 @@ export function HomePage({ onNavigate }: HomeProps) {
       {/* ═══════════════ HERO ═══════════════ */}
       <section className="relative h-screen min-h-[700px] overflow-hidden">
         {/* Video / poster background */}
-        <div className="absolute inset-0">
+        <div
+          className="absolute inset-0 gpu-layer"
+          style={{ transform: prefersReducedMotion ? 'none' : `translateY(${videoParallax}px)` }}
+        >
           {prefersReducedMotion ? (
             <img
               src={HERO_POSTER}
@@ -72,52 +104,141 @@ export function HomePage({ onNavigate }: HomeProps) {
             </video>
           )}
           <div className="absolute inset-0 hero-bg"></div>
+          <div className="absolute inset-0 hero-vignette"></div>
         </div>
 
         {/* Content */}
         <div className="relative z-10 h-full max-w-5xl mx-auto px-5 lg:px-8 flex items-center pt-20">
-          <div className="w-full animate-fade-in-up">
-            <span className="section-badge mb-6" style={{ background: 'rgba(255,255,255,0.15)', borderColor: 'rgba(255,255,255,0.25)', color: '#fff' }}>
-              Kribi · Cameroun
-            </span>
-            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.05]">
-              Explorez Kribi<br /><span className="gradient-text-accent">autrement</span>
-            </h1>
-            <p className="mt-6 text-lg md:text-xl text-white/85 leading-relaxed max-w-2xl">
-              Vivez des expériences authentiques entre mer, forêt et culture locale. Le Cameroun comme vous ne l'avez jamais vu.
-            </p>
-            <div className="mt-9 flex flex-col sm:flex-row gap-4">
-              <button
-                onClick={() => onNavigate('experiences')}
-                className="btn-shimmer text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 shadow-accent group"
+          <div
+            className="w-full gpu-layer"
+            style={{
+              opacity: textOpacity,
+              transform: `translate(${mousePos.x}px, ${mousePos.y}px) translateY(${prefersReducedMotion ? 0 : parallaxOffset}px)`,
+              transition: 'transform 0.1s ease-out',
+            }}
+          >
+            {/* Line 1 — Pour votre séjour à */}
+            {prefersReducedMotion ? (
+              <p className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] hero-text-shadow">
+                Pour votre séjour à
+              </p>
+            ) : (
+              <motion.p
+                initial={{ opacity: 0, y: 60, filter: 'blur(12px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] hero-text-shadow"
               >
-                Découvrir nos expériences
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-              <button
-                onClick={() => onNavigate('contact')}
-                className="glass text-white px-8 py-4 rounded-full font-semibold text-base flex items-center justify-center gap-2 hover:bg-white/25 transition-all duration-300"
+                Pour votre séjour à
+              </motion.p>
+            )}
+
+            {/* Line 2 — KRIBI (170% larger) */}
+            {prefersReducedMotion ? (
+              <h1 className="font-display font-semibold text-[42px] md:text-[54px] lg:text-[68px] xl:text-[76px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow">
+                KRIBI,
+              </h1>
+            ) : (
+              <motion.h1
+                initial={{ opacity: 0, scale: 0.78, rotateX: 25, filter: 'blur(15px)' }}
+                animate={{ opacity: 1, scale: 1, rotateX: 0, filter: 'blur(0px)' }}
+                transition={{ delay: 0.4, type: 'spring', stiffness: 90, damping: 18 }}
+                className="font-display font-semibold text-[42px] md:text-[54px] lg:text-[68px] xl:text-[76px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow"
               >
-                Nous contacter
-              </button>
-            </div>
+                KRIBI,
+              </motion.h1>
+            )}
+
+            {/* Line 3 — nous nous occupons de */}
+            {prefersReducedMotion ? (
+              <p className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow">
+                nous nous occupons de
+              </p>
+            ) : (
+              <motion.p
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.85, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow"
+              >
+                nous nous occupons de
+              </motion.p>
+            )}
+
+            {/* Line 4 — TOUT. with gold accent + shine */}
+            {prefersReducedMotion ? (
+              <p className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow">
+                <span className="text-accent hero-tout-glow">TOUT.</span>
+              </p>
+            ) : (
+              <motion.p
+                initial={{ opacity: 0, scale: 0.82 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1.15, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow"
+              >
+                <span className="text-accent hero-tout-glow relative inline-block">
+                  TOUT.
+                  <span className="tout-shine-effect absolute inset-0">TOUT.</span>
+                </span>
+              </motion.p>
+            )}
+
+            {/* Buttons — appear after all text */}
+            {prefersReducedMotion ? (
+              <div className="mt-14 md:mt-16 flex flex-col sm:flex-row gap-5">
+                <button
+                  onClick={() => onNavigate('experiences')}
+                  className="btn-shimmer text-white px-8 py-4 rounded-xl font-semibold text-base flex items-center justify-center gap-2 shadow-accent group hover:-translate-y-[5px] hover:shadow-lg hover:scale-[1.04] transition-all duration-300"
+                >
+                  Découvrir nos expériences
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+                <button
+                  onClick={() => onNavigate('contact')}
+                  className="glass text-white px-8 py-4 rounded-xl font-semibold text-base flex items-center justify-center gap-2 hover:bg-white/25 hover:-translate-y-[5px] hover:shadow-lg hover:scale-[1.04] transition-all duration-300"
+                >
+                  Nous contacter
+                </button>
+              </div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.6, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                className="mt-14 md:mt-16"
+              >
+                <div className="flex flex-col sm:flex-row gap-5">
+                  <button
+                    onClick={() => onNavigate('experiences')}
+                    className="btn-shimmer text-white px-8 py-4 rounded-xl font-semibold text-base flex items-center justify-center gap-2 shadow-accent group hover:-translate-y-[5px] hover:shadow-lg hover:scale-[1.04] transition-all duration-300"
+                  >
+                    Découvrir nos expériences
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                  <button
+                    onClick={() => onNavigate('contact')}
+                    className="glass text-white px-8 py-4 rounded-xl font-semibold text-base flex items-center justify-center gap-2 hover:bg-white/25 hover:-translate-y-[5px] hover:shadow-lg hover:scale-[1.04] transition-all duration-300"
+                  >
+                    Nous contacter
+                  </button>
+                </div>
+              </motion.div>
+            )}
           </div>
         </div>
 
-        {/* Location pill */}
-        <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-20 hidden md:block animate-float">
-          <div className="glass-dark rounded-full px-5 py-2.5 flex items-center gap-2 text-white text-sm">
-            <MapPin className="w-4 h-4 text-accent-light" />
-            <span className="font-medium">Kribi, Cameroun</span>
-            <span className="w-2 h-2 rounded-full bg-sky-light animate-pulse"></span>
+        {/* Scroll indicator — Découvrir */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 cursor-pointer" onClick={scrollToNext}>
+          <span className="text-white/60 text-xs font-medium tracking-[0.2em] uppercase" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            Découvrir
+          </span>
+          <div className="h-8 w-px bg-white/30 overflow-hidden">
+            <div className="w-full h-full bg-white/80 scroll-indicator-line"></div>
           </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20">
-          <div className="w-6 h-10 rounded-full border-2 border-white/40 flex items-start justify-center p-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-white animate-bounce"></div>
-          </div>
+          <svg className="w-4 h-4 text-white/60 hero-arrow-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
         </div>
       </section>
 
@@ -192,6 +313,18 @@ export function HomePage({ onNavigate }: HomeProps) {
             </button>
           </div>
 
+          {expLoading && (
+            <div className="col-span-full flex flex-col items-center justify-center py-16">
+              <div className="w-10 h-10 border-4 border-sky/30 border-t-sky rounded-full animate-spin mb-4" />
+              <p className="text-slate-500 font-medium">Chargement des expériences...</p>
+            </div>
+          )}
+          {!expLoading && expError && (
+            <div className="col-span-full text-center py-16">
+              <p className="text-slate-500 font-medium">Impossible de charger les expériences pour le moment.</p>
+            </div>
+          )}
+          {!expLoading && !expError && (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
             {EXPERIENCES.slice(0, 6).map((exp, i) => (
               <div
@@ -230,6 +363,7 @@ export function HomePage({ onNavigate }: HomeProps) {
               </div>
             ))}
           </div>
+          )}
         </div>
       </section>
 
@@ -251,6 +385,18 @@ export function HomePage({ onNavigate }: HomeProps) {
             </button>
           </div>
 
+          {accLoading && (
+            <div className="col-span-full flex flex-col items-center justify-center py-16">
+              <div className="w-10 h-10 border-4 border-sky/30 border-t-sky rounded-full animate-spin mb-4" />
+              <p className="text-slate-500 font-medium">Chargement des hébergements...</p>
+            </div>
+          )}
+          {!accLoading && accError && (
+            <div className="col-span-full text-center py-16">
+              <p className="text-slate-500 font-medium">Impossible de charger les hébergements pour le moment.</p>
+            </div>
+          )}
+          {!accLoading && !accError && (
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {ACCOMMODATIONS.map((acc, i) => (
               <div
@@ -287,6 +433,7 @@ export function HomePage({ onNavigate }: HomeProps) {
               </div>
             ))}
           </div>
+          )}
         </div>
       </section>
 

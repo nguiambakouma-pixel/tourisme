@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 
 export function useScrollReveal() {
   useEffect(() => {
@@ -74,4 +75,74 @@ export function usePageMeta(title: string, description: string) {
     }
     meta.setAttribute('content', description);
   }, [title, description]);
+}
+
+export function useExperiences() {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase
+      .from('experiences')
+      .select('*')
+      .order('id', { ascending: true })
+      .then(({ data, error }) => {
+        if (error) { setError(error.message); setLoading(false); return; }
+        setData((data ?? []).map((e) => ({
+          id: e.id, title: e.title, description: e.description, price: e.price,
+          duration: e.duration, category: e.category, badge: e.badge,
+          badgeColor: e.badge_color, image: e.image,
+        })));
+        setLoading(false);
+      });
+  }, []);
+
+  return { data, loading, error };
+}
+
+export function useAccommodations() {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase
+      .from('accommodations')
+      .select('*')
+      .order('id', { ascending: true })
+      .then(({ data, error }) => {
+        if (error) { setError(error.message); setLoading(false); return; }
+        setData((data ?? []).map((a) => ({
+          id: a.id, title: a.title, type: a.type, price: a.price, rating: a.rating,
+          reviews: a.reviews, features: a.features ?? [], image: a.image, description: a.description,
+        })));
+        setLoading(false);
+      });
+  }, []);
+
+  return { data, loading, error };
+}
+
+export function useBlogPosts() {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase
+      .from('blog_posts')
+      .select('*')
+      .order('id', { ascending: true })
+      .then(({ data, error }) => {
+        if (error) { setError(error.message); setLoading(false); return; }
+        setData((data ?? []).map((b) => ({
+          id: b.id, title: b.title, excerpt: b.excerpt, content: b.content,
+          category: b.category, date: b.date, readTime: b.read_time, image: b.image, author: b.author,
+        })));
+        setLoading(false);
+      });
+  }, []);
+
+  return { data, loading, error };
 }

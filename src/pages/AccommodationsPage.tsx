@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { Star, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Star, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 import { PageHero, SectionTitle, StarRating } from '@/components/ui';
 import { AccommodationFeatures } from '@/components/AccommodationFeatures';
-import { ACCOMMODATIONS } from '@/data';
-import { usePageMeta, useScrollReveal } from '@/hooks';
+import { usePageMeta, useScrollReveal, useAccommodations } from '@/hooks';
 
 interface AccommodationsProps { onNavigate: (page: string) => void }
 
@@ -12,6 +11,7 @@ const TYPES = ['Tous', 'Studio', 'Appartement', 'Villa', 'Résidence'];
 export function AccommodationsPage({ onNavigate }: AccommodationsProps) {
   usePageMeta('Hébergements | StayEatSee+', 'Studios, appartements, villas et résidences premium à Kribi, avec vue mer, piscine et parking sécurisé.');
   useScrollReveal();
+  const { data: ACCOMMODATIONS, loading, error } = useAccommodations();
   const [filter, setFilter] = useState('Tous');
   const [booked, setBooked] = useState<number | null>(null);
 
@@ -56,7 +56,29 @@ export function AccommodationsPage({ onNavigate }: AccommodationsProps) {
         </div>
       </section>
 
+      {/* Loading state */}
+      {loading && (
+        <section className="py-22 bg-gradient-to-b from-white to-sand-light/50">
+          <div className="max-w-7xl mx-auto px-5 lg:px-8 flex flex-col items-center justify-center py-20">
+            <Loader2 className="w-10 h-10 text-sky animate-spin mb-4" />
+            <p className="text-slate-500 font-medium">Chargement des hébergements...</p>
+          </div>
+        </section>
+      )}
+
+      {/* Error state */}
+      {!loading && error && (
+        <section className="py-22 bg-gradient-to-b from-white to-sand-light/50">
+          <div className="max-w-7xl mx-auto px-5 lg:px-8">
+            <div className="text-center py-20">
+              <p className="text-slate-500 font-medium">Impossible de charger les hébergements pour le moment.</p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Grid */}
+      {!loading && !error && (
       <section className="py-22 bg-gradient-to-b from-white to-sand-light/50">
         <div className="max-w-7xl mx-auto px-5 lg:px-8">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
@@ -104,6 +126,7 @@ export function AccommodationsPage({ onNavigate }: AccommodationsProps) {
           </div>
         </div>
       </section>
+      )}
 
       {/* Info section */}
       <section className="py-20 bg-white">

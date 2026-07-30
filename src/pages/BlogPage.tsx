@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Calendar, Clock, ArrowRight, User, X } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, User, X, Loader2 } from 'lucide-react';
 import { PageHero, SectionTitle } from '@/components/ui';
-import { BLOG_POSTS } from '@/data';
-import { usePageMeta, useScrollReveal } from '@/hooks';
+import { usePageMeta, useScrollReveal, useBlogPosts } from '@/hooks';
 
 const CATEGORIES = ['Tous', 'Destinations', 'Activités', 'Gastronomie', 'Conseils', 'Nature', 'Culture'];
 
 export function BlogPage() {
   usePageMeta('Blog | StayEatSee+', 'Conseils, destinations et récits pour préparer votre voyage à Kribi et découvrir le Cameroun authentique.');
   useScrollReveal();
+  const { data: BLOG_POSTS, loading, error } = useBlogPosts();
   const [filter, setFilter] = useState('Tous');
   const [selected, setSelected] = useState<typeof BLOG_POSTS[0] | null>(null);
 
@@ -42,7 +42,29 @@ export function BlogPage() {
         </div>
       </section>
 
+      {/* Loading state */}
+      {loading && (
+        <section className="py-22 bg-gradient-to-b from-white to-sky-pale/20">
+          <div className="max-w-7xl mx-auto px-5 lg:px-8 flex flex-col items-center justify-center py-20">
+            <Loader2 className="w-10 h-10 text-sky animate-spin mb-4" />
+            <p className="text-slate-500 font-medium">Chargement des articles...</p>
+          </div>
+        </section>
+      )}
+
+      {/* Error state */}
+      {!loading && error && (
+        <section className="py-22 bg-gradient-to-b from-white to-sky-pale/20">
+          <div className="max-w-7xl mx-auto px-5 lg:px-8">
+            <div className="text-center py-20">
+              <p className="text-slate-500 font-medium">Impossible de charger les articles pour le moment.</p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Grid */}
+      {!loading && !error && (
       <section className="py-22 bg-gradient-to-b from-white to-sky-pale/20">
         <div className="max-w-7xl mx-auto px-5 lg:px-8">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
@@ -82,6 +104,7 @@ export function BlogPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Modal */}
       {selected && (
@@ -111,19 +134,12 @@ export function BlogPage() {
               </div>
               <p className="text-slate-600 leading-relaxed">{selected.excerpt}</p>
               <div className="mt-4 space-y-3 text-slate-600 leading-relaxed">
-                <p>
-                  Kribi, joyau de la côte camerounaise, offre une diversité de paysages et d'expériences qui en font une destination de choix.
-                  De ses plages de sable fin bordées par l'océan Atlantique à ses forêts équatoriales riches en biodiversité,
-                  chaque coin de Kribi mérite d'être exploré.
-                </p>
-                <p>
-                  L'authenticité de ses villages de pêcheurs, la générosité de sa gastronomie et la chaleur de ses habitants
-                  font de cette ville un lieu où le voyage prend tout son sens. Préparez-vous à vivre une aventure inoubliable.
-                </p>
-                <p>
-                  Chez StayEatSee+, nous mettons un point d'honneur à vous offrir des expériences qui respectent les communautés
-                  locales et l'environnement. Réservez votre prochain séjour et laissez-nous vous guider.
-                </p>
+                {selected.content
+                  ? selected.content.split('\n\n').map((paragraph: string, i: number) => (
+                      <p key={i}>{paragraph}</p>
+                    ))
+                  : <p>{selected.excerpt}</p>
+                }
               </div>
             </div>
           </div>

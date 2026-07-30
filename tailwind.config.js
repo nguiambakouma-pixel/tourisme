@@ -14,6 +14,7 @@ export default {
       fontFamily: {
         sans:  ['Poppins', 'system-ui', 'sans-serif'],
         serif: ['Playfair Display', 'Georgia', 'serif'],
+        display: ['Cormorant Garamond', 'Georgia', 'serif'],
       },
       boxShadow: {
         'brand':  '0 8px 32px rgba(26,60,122,0.28)',
@@ -26,7 +27,7 @@ export default {
         'gradient-brand':  'linear-gradient(135deg, #122C5E 0%, #1A3C7A 100%)',
         'gradient-sky':    'linear-gradient(135deg, #2A87AD 0%, #3EABD4 100%)',
         'gradient-accent': 'linear-gradient(135deg, #B04520 0%, #D4572A 100%)',
-        'gradient-hero':   'linear-gradient(135deg, rgba(26,60,122,0.88) 0%, rgba(62,171,212,0.50) 100%)',
+        'gradient-hero':   'linear-gradient(135deg, rgba(26,60,122,0.55) 0%, rgba(62,171,212,0.30) 100%)',
         'gradient-card':   'linear-gradient(to top, rgba(26,60,122,0.90) 0%, transparent 60%)',
       },
       borderRadius: { '2xl': '1rem', '3xl': '1.5rem', '4xl': '2rem' },

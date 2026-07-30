@@ -1,6 +1,13 @@
 import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { ProtectedRoute } from '@/components/admin/ProtectedRoute';
+import { AdminLayout } from '@/components/admin/AdminLayout';
+import { LoginPage } from '@/pages/admin/LoginPage';
+import { AdminOverviewPage } from '@/pages/admin/AdminOverviewPage';
+import { ExperiencesAdminPage } from '@/pages/admin/ExperiencesAdminPage';
+import { AccommodationsAdminPage } from '@/pages/admin/AccommodationsAdminPage';
+import { BlogAdminPage } from '@/pages/admin/BlogAdminPage';
 import { HomePage } from '@/pages/HomePage';
 import { AboutPage } from '@/pages/AboutPage';
 import { ExperiencesPage } from '@/pages/ExperiencesPage';
@@ -23,13 +30,32 @@ function App() {
   const location = useLocation();
 
   const page = currentPageFromPath(location.pathname);
-
   const handleNavigate = (p: string) => navigate(p === 'home' ? '/' : `/${p}`);
 
+  const isAdmin = location.pathname.startsWith('/admin');
+
+  /* ── Admin layout : sans Navbar, sans Footer, sans <main> public ── */
+  if (isAdmin) {
+    return (
+      <div className="min-h-screen bg-white font-sans">
+        <Routes>
+          <Route path="/admin/login" element={<LoginPage />} />
+          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+            <Route index element={<AdminOverviewPage />} />
+            <Route path="experiences" element={<ExperiencesAdminPage />} />
+            <Route path="accommodations" element={<AccommodationsAdminPage />} />
+            <Route path="blog" element={<BlogAdminPage />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/admin/login" replace />} />
+        </Routes>
+      </div>
+    );
+  }
+
+  /* ── Site public : Navbar, main, Footer ── */
   return (
     <div className="min-h-screen bg-white font-sans">
       <Navbar currentPage={page} onNavigate={handleNavigate} />
-
       <main className="page-enter">
         <Routes>
           <Route path="/"               element={<HomePage onNavigate={handleNavigate} />} />
@@ -42,7 +68,6 @@ function App() {
           <Route path="*"               element={<Navigate to="/" replace />} />
         </Routes>
       </main>
-
       <Footer onNavigate={handleNavigate} />
     </div>
   );
