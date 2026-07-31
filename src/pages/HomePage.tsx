@@ -2,12 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   Search, MapPin, Star, ArrowRight, Compass, Clock, Shield, Headphones,
-  BadgeCheck, Wallet, Sparkles, Quote,
+  BadgeCheck, Wallet, Sparkles, Quote, ShoppingCart, Check,
 } from 'lucide-react';
 import { SectionTitle } from '@/components/ui';
 import { AccommodationFeatures } from '@/components/AccommodationFeatures';
 import { Testimonials } from '@/components/Testimonials';
 import { useCounter, useInView, usePageMeta, useScrollReveal, useExperiences, useAccommodations } from '@/hooks';
+import { useCart } from '@/lib/CartContext';
 
 interface HomeProps { onNavigate: (page: string) => void }
 
@@ -38,6 +39,7 @@ export function HomePage({ onNavigate }: HomeProps) {
   useScrollReveal();
   const { data: EXPERIENCES, loading: expLoading, error: expError } = useExperiences();
   const { data: ACCOMMODATIONS, loading: accLoading, error: accError } = useAccommodations();
+  const { addItem, isInCart, removeItem } = useCart();
   const [searchValue, setSearchValue] = useState('');
   const [searchDone, setSearchDone] = useState(false);
   const { ref: statsRef, inView: statsInView } = useInView(0.3);
@@ -352,12 +354,21 @@ export function HomePage({ onNavigate }: HomeProps) {
                       <span className="price-luxury">{exp.price}</span>
                       <span className="text-slate-500 text-sm"> FCFA</span>
                     </div>
-                    <button
-                      onClick={() => onNavigate('experiences')}
-                      className="bg-accent-pale text-accent px-4 py-2 rounded-full text-sm font-semibold hover:bg-accent hover:text-white transition-all flex items-center gap-1.5 group"
-                    >
-                      Réserver <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                    </button>
+                    {isInCart(`experience:${exp.id}`) ? (
+                      <button
+                        onClick={() => removeItem(`experience:${exp.id}`)}
+                        className="bg-brand text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-brand-dark transition-all flex items-center gap-1.5"
+                      >
+                        <Check className="w-4 h-4" /> ✓ Dans le panier
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => addItem({ key: `experience:${exp.id}`, type: 'experience', id: exp.id, title: exp.title, price: exp.price, image: exp.image })}
+                        className="bg-accent-pale text-accent px-4 py-2 rounded-full text-sm font-semibold hover:bg-accent hover:text-white transition-all flex items-center gap-1.5 group"
+                      >
+                        <ShoppingCart className="w-4 h-4" /> Ajouter au panier
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -422,12 +433,21 @@ export function HomePage({ onNavigate }: HomeProps) {
                       <span className="text-xl font-semibold text-accent">{acc.price}</span>
                       <span className="text-slate-500 text-xs"> /nuit</span>
                     </div>
-                    <button
-                      onClick={() => onNavigate('accommodations')}
-                      className="bg-brand text-white px-3.5 py-2 rounded-full text-xs font-semibold hover:bg-brand-light transition-all"
-                    >
-                      Réserver
-                    </button>
+                    {isInCart(`accommodation:${acc.id}`) ? (
+                      <button
+                        onClick={() => removeItem(`accommodation:${acc.id}`)}
+                        className="bg-brand text-white px-3.5 py-2 rounded-full text-xs font-semibold hover:bg-brand-dark transition-all flex items-center gap-1.5"
+                      >
+                        <Check className="w-4 h-4" /> ✓ Dans le panier
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => addItem({ key: `accommodation:${acc.id}`, type: 'accommodation', id: acc.id, title: acc.title, price: acc.price, image: acc.image })}
+                        className="bg-brand text-white px-3.5 py-2 rounded-full text-xs font-semibold hover:bg-brand-light transition-all flex items-center gap-1.5"
+                      >
+                        <ShoppingCart className="w-4 h-4" /> Ajouter au panier
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

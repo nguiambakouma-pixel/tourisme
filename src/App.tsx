@@ -15,6 +15,7 @@ import { AccommodationsPage } from '@/pages/AccommodationsPage';
 import { GalleryPage } from '@/pages/GalleryPage';
 import { BlogPage } from '@/pages/BlogPage';
 import { ContactPage } from '@/pages/ContactPage';
+import { CartDrawer } from '@/components/CartDrawer';
 
 export type Page =
   | 'home' | 'about' | 'experiences'
@@ -56,6 +57,7 @@ function App() {
   return (
     <div className="min-h-screen bg-white font-sans">
       <Navbar currentPage={page} onNavigate={handleNavigate} />
+      <CartDrawer />
       <main className="page-enter">
         <Routes>
           <Route path="/"               element={<HomePage onNavigate={handleNavigate} />} />

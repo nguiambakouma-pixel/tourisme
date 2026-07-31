@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ShoppingBag } from 'lucide-react';
 import { NAV_LINKS } from '@/data';
+import { useCart } from '@/lib/CartContext';
 
 interface NavbarProps {
   currentPage: string;
@@ -10,6 +11,7 @@ interface NavbarProps {
 export function Navbar({ currentPage, onNavigate }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { items, toggleCart } = useCart();
 
   /* ── Scroll listener ── */
   useEffect(() => {
@@ -109,7 +111,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
           </div>
 
           {/* ── CTA desktop ── */}
-          <div className="hidden lg:block">
+          <div className="hidden lg:flex items-center gap-2">
             <button
               onClick={() => handleNav('contact')}
               className="btn-shimmer text-white px-6 py-2.5 rounded-full text-sm shadow-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
@@ -117,6 +119,20 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
               Réserver maintenant
             </button>
           </div>
+
+          {/* ── Cart icon ── */}
+          <button
+            onClick={toggleCart}
+            className="relative p-2.5 rounded-full text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
+            aria-label="Ouvrir le panier"
+          >
+            <ShoppingBag className="w-5 h-5" />
+            {items.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-gold-light text-navy text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 font-bold leading-none">
+                {items.length}
+              </span>
+            )}
+          </button>
 
           {/* ── Mobile toggle ── */}
           <button

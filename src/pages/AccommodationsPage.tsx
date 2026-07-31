@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Star, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
+import { Star, ShoppingCart, Check, Loader2 } from 'lucide-react';
 import { PageHero, SectionTitle, StarRating } from '@/components/ui';
 import { AccommodationFeatures } from '@/components/AccommodationFeatures';
 import { usePageMeta, useScrollReveal, useAccommodations } from '@/hooks';
+import { useCart } from '@/lib/CartContext';
 
 interface AccommodationsProps { onNavigate: (page: string) => void }
 
@@ -13,20 +14,9 @@ export function AccommodationsPage({ onNavigate }: AccommodationsProps) {
   useScrollReveal();
   const { data: ACCOMMODATIONS, loading, error } = useAccommodations();
   const [filter, setFilter] = useState('Tous');
-  const [booked, setBooked] = useState<number | null>(null);
+  const { addItem, isInCart, removeItem } = useCart();
 
   const filtered = filter === 'Tous' ? ACCOMMODATIONS : ACCOMMODATIONS.filter((a) => a.type === filter);
-
-  const handleBook = (id: number) => {
-    const acc = ACCOMMODATIONS.find((a) => a.id === id);
-    if (acc) {
-      const msg = `Bonjour StayEatSee+, je souhaite réserver l'hébergement "${acc.title}" (prix : ${acc.price} FCFA/nuit). Pouvez-vous me donner plus d'informations ?`;
-      const url = `https://wa.me/237688150361?text=${encodeURIComponent(msg)}`;
-      window.open(url, '_blank');
-    }
-    setBooked(id);
-    setTimeout(() => setBooked(null), 3000);
-  };
 
   return (
     <div className="page-enter">
@@ -107,16 +97,19 @@ export function AccommodationsPage({ onNavigate }: AccommodationsProps) {
                       <span className="price-luxury">{acc.price}</span>
                       <span className="text-slate-500 text-sm"> FCFA/nuit</span>
                     </div>
-                    {booked === acc.id ? (
-                      <span className="flex items-center gap-1.5 text-sky font-semibold text-sm animate-scale-in">
-                        <CheckCircle2 className="w-4 h-4" /> Réservé !
-                      </span>
+                    {isInCart(`accommodation:${acc.id}`) ? (
+                      <button
+                        onClick={() => removeItem(`accommodation:${acc.id}`)}
+                        className="bg-brand text-white px-4 py-2.5 rounded-full text-sm font-semibold hover:bg-brand-dark transition-all flex items-center gap-1.5"
+                      >
+                        <Check className="w-4 h-4" /> ✓ Dans le panier
+                      </button>
                     ) : (
                       <button
-                        onClick={() => handleBook(acc.id)}
+                        onClick={() => addItem({ key: `accommodation:${acc.id}`, type: 'accommodation', id: acc.id, title: acc.title, price: acc.price, image: acc.image })}
                         className="bg-accent text-white px-4 py-2.5 rounded-full text-sm font-semibold hover:bg-accent-dark transition-all flex items-center gap-1.5 group"
                       >
-                        Réserver <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                        <ShoppingCart className="w-4 h-4" /> Ajouter au panier
                       </button>
                     )}
                   </div>
