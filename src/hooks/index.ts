@@ -110,6 +110,31 @@ export function useExperiences() {
   return { data, loading, error };
 }
 
+export function useGalleryImages() {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .from('gallery_images')
+      .select('*')
+      .order('id', { ascending: true })
+      .then(({ data: result, error: err }) => {
+        if (cancelled) return;
+        if (err) { setError(err.message); setLoading(false); return; }
+        setData((result ?? []).map((g) => ({
+          id: g.id, src: g.src, alt: g.alt, cat: g.cat,
+        })));
+        setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  return { data, loading, error };
+}
+
 export function useAccommodations() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

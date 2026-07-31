@@ -67,6 +67,8 @@ export const Navbar = memo(function Navbar({ currentPage, onNavigate }: NavbarPr
             className="flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 rounded-2xl"
             aria-label="Retour à l'accueil"
           >
+            {/* ── Icon (désactivé en attendant le logo transparent final) ── */}
+            {/*
             <img
               src="/web-app-manifest-512x512.png"
               alt=""
@@ -77,14 +79,9 @@ export const Navbar = memo(function Navbar({ currentPage, onNavigate }: NavbarPr
               }`}
               aria-hidden={!scrolled}
             />
-            <div
-              className={`text-left leading-none overflow-hidden whitespace-nowrap transition-all duration-[350ms] ease-in-out ${
-                scrolled
-                  ? 'opacity-0 scale-95 max-w-0'
-                  : 'opacity-100 scale-100 max-w-[300px]'
-              }`}
-              aria-hidden={scrolled || undefined}
-            >
+            */}
+            {/* ── Texte toujours visible ── */}
+            <div className="text-left leading-none whitespace-nowrap">
               <span className="text-2xl font-extrabold tracking-tight leading-none">
                 <span className="text-brand">Stay</span><span className="text-accent">Eat</span><span className="text-sky">See</span><span className="text-accent">+</span>
               </span>

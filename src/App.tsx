@@ -20,6 +20,7 @@ const AdminOverviewPage = lazy(() => import('@/pages/admin/AdminOverviewPage').t
 const ExperiencesAdminPage = lazy(() => import('@/pages/admin/ExperiencesAdminPage').then(m => ({ default: m.ExperiencesAdminPage })));
 const AccommodationsAdminPage = lazy(() => import('@/pages/admin/AccommodationsAdminPage').then(m => ({ default: m.AccommodationsAdminPage })));
 const BlogAdminPage = lazy(() => import('@/pages/admin/BlogAdminPage').then(m => ({ default: m.BlogAdminPage })));
+const GalleryAdminPage = lazy(() => import('@/pages/admin/GalleryAdminPage').then(m => ({ default: m.GalleryAdminPage })));
 const ProtectedRoute = lazy(() => import('@/components/admin/ProtectedRoute').then(m => ({ default: m.ProtectedRoute })));
 
 // Minimal loading fallback - just a blank div with background color to avoid layout shift
@@ -61,6 +62,7 @@ function App() {
               <Route path="experiences" element={<ExperiencesAdminPage />} />
               <Route path="accommodations" element={<AccommodationsAdminPage />} />
               <Route path="blog" element={<BlogAdminPage />} />
+              <Route path="gallery" element={<GalleryAdminPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/admin/login" replace />} />
           </Routes>

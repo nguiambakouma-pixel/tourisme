@@ -23,7 +23,7 @@ export function Footer({ onNavigate }: FooterProps) {
   };
 
   return (
-    <footer className="bg-brand-light text-white relative overflow-hidden">
+    <footer className="footer-bg text-white relative overflow-hidden">
       {/* Orbes de fond */}
       <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-sky/25 blur-3xl pointer-events-none"></div>
       <div className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-accent/20 blur-3xl pointer-events-none"></div>

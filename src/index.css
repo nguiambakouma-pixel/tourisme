@@ -286,9 +286,15 @@
 
 /* ── Navbar ────────────────────────────────────────────────── */
 .navbar-scrolled {
-  background: rgba(26,60,122,0.97) !important;
+  background: linear-gradient(135deg, rgba(84,112,164,0.97) 0%, rgba(66,94,147,0.96) 40%, rgba(49,78,131,0.95) 100%) !important;
   backdrop-filter: blur(20px);
-  box-shadow: 0 4px 32px rgba(26,60,122,0.30);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 32px rgba(26,60,122,0.28);
+}
+
+/* ── Footer ────────────────────────────────────────────────── */
+.footer-bg {
+  background: linear-gradient(160deg, #3A66AD 0%, #2F5AA3 40%, #27509A 100%);
 }
 
 /* ── Masonry ───────────────────────────────────────────────── */

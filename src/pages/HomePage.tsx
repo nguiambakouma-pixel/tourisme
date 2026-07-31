@@ -62,37 +62,6 @@ const StatCounter = memo(function StatCounter({ value, suffix, label, start, del
 });
 
 function HeroVideo() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [videoReady, setVideoReady] = useState(false);
-
-  // Only start loading video when section is near viewport
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el || usePosterInstead) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVideoReady(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '200px' }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  // Start video after first paint (delay decoding)
-  useEffect(() => {
-    if (!videoReady || !videoRef.current) return;
-    const video = videoRef.current;
-    const timer = setTimeout(() => {
-      video.play().catch(() => {});
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [videoReady]);
-
   if (usePosterInstead) {
     return (
       <img
@@ -106,28 +75,17 @@ function HeroVideo() {
   }
 
   return (
-    <div ref={sectionRef} className="absolute inset-0">
-      <img
-        src={HERO_POSTER}
-        alt=""
-        className="absolute inset-0 w-full h-full object-cover"
-        loading="eager"
-        aria-hidden="true"
-      />
-      {videoReady && (
-        <video
-          ref={videoRef}
-          className="absolute inset-0 w-full h-full object-cover"
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster={HERO_POSTER}
-        >
-          <source src={HERO_VIDEO} type="video/mp4" />
-        </video>
-      )}
-    </div>
+    <video
+      className="absolute inset-0 w-full h-full object-cover"
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      poster={HERO_POSTER}
+    >
+      <source src={HERO_VIDEO} type="video/mp4" />
+    </video>
   );
 }
 

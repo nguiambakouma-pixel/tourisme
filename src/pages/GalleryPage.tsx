@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { X, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ZoomIn, Loader2 } from 'lucide-react';
 import { PageHero } from '@/components/ui';
-import { GALLERY_IMAGES } from '@/data';
-import { usePageMeta, useScrollReveal } from '@/hooks';
+import { usePageMeta, useScrollReveal, useGalleryImages } from '@/hooks';
 
 const CATEGORIES = ['Tous', 'Plages', 'Aventure', 'Nautique', 'Nature', 'Culture', 'Gastronomie', 'Hébergements'];
 
 export function GalleryPage() {
   usePageMeta('Galerie | StayEatSee+', 'Explorez Kribi en images : plages, aventures, nature et culture camerounaise à travers notre galerie photo.');
   useScrollReveal();
+  const { data: GALLERY_IMAGES, loading, error } = useGalleryImages();
   const [filter, setFilter] = useState('Tous');
   const [lightbox, setLightbox] = useState<number | null>(null);
 
@@ -57,7 +57,29 @@ export function GalleryPage() {
         </div>
       </section>
 
+      {/* Loading state */}
+      {loading && (
+        <section className="py-22 bg-gradient-to-b from-white to-sand-light/40">
+          <div className="max-w-7xl mx-auto px-5 lg:px-8 flex flex-col items-center justify-center py-20">
+            <Loader2 className="w-10 h-10 text-sky animate-spin mb-4" />
+            <p className="text-slate-500 font-medium">Chargement de la galerie...</p>
+          </div>
+        </section>
+      )}
+
+      {/* Error state */}
+      {!loading && error && (
+        <section className="py-22 bg-gradient-to-b from-white to-sand-light/40">
+          <div className="max-w-7xl mx-auto px-5 lg:px-8">
+            <div className="text-center py-20">
+              <p className="text-slate-500 font-medium">Impossible de charger la galerie pour le moment.</p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Masonry */}
+      {!loading && !error && (
       <section className="py-22 bg-gradient-to-b from-white to-sand-light/40">
         <div className="max-w-7xl mx-auto px-5 lg:px-8">
           <div className="masonry">
@@ -83,6 +105,7 @@ export function GalleryPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Lightbox */}
       {current && (
