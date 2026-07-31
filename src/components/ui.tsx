@@ -81,7 +81,7 @@ export function PageHero({ badge, title, subtitle, image }: PageHeroProps) {
   return (
     <section className="relative h-[60vh] min-h-[420px] flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0">
-        <img src={image} alt={title} className="w-full h-full object-cover" />
+        <img src={image} alt={title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
         <div className="absolute inset-0 bg-gradient-hero"></div>
       </div>
       <div className="relative z-10 text-center px-5 max-w-3xl mx-auto animate-fade-in-up">

@@ -76,7 +76,7 @@ export function BlogPage() {
                 onClick={() => setSelected(post)}
               >
                 <div className="img-zoom relative h-56 overflow-hidden">
-                  <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+                  <img src={post.image} alt={post.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                   <div className="absolute top-4 left-4">
                     <span className="bg-gradient-to-r from-brand to-sky text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
                       {post.category}
@@ -120,7 +120,7 @@ export function BlogPage() {
               <X className="w-5 h-5 text-brand" />
             </button>
             <div className="h-64 overflow-hidden">
-              <img src={selected.image} alt={selected.title} className="w-full h-full object-cover" />
+              <img src={selected.image} alt={selected.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
             </div>
             <div className="p-8">
               <div className="flex items-center gap-4 text-xs text-slate-500 mb-4">

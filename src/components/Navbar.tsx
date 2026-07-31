@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo, useCallback } from 'react';
 import { Menu, X, ShoppingBag } from 'lucide-react';
 import { NAV_LINKS } from '@/data';
 import { useCart } from '@/lib/CartContext';
@@ -8,14 +8,23 @@ interface NavbarProps {
   onNavigate: (page: string) => void;
 }
 
-export function Navbar({ currentPage, onNavigate }: NavbarProps) {
+export const Navbar = memo(function Navbar({ currentPage, onNavigate }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { items, toggleCart } = useCart();
 
-  /* ── Scroll listener ── */
+  /* ── Throttled scroll listener ── */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80);
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 80);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -25,7 +34,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setMobileOpen(false);
     };
-    document.addEventListener('keydown', onKey);
+    document.addEventListener('keydown', onKey, { passive: true });
     return () => document.removeEventListener('keydown', onKey);
   }, []);
 
@@ -35,11 +44,13 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
 
-  const handleNav = (page: string) => {
+  const handleNav = useCallback((page: string) => {
     onNavigate(page);
     setMobileOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, [onNavigate]);
+
+  const itemCount = items.length;
 
   return (
     <>
@@ -56,7 +67,6 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
             className="flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 rounded-2xl"
             aria-label="Retour à l'accueil"
           >
-            {/* Brand icon — appears on scroll with subtle zoom */}
             <img
               src="/web-app-manifest-512x512.png"
               alt=""
@@ -67,7 +77,6 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
               }`}
               aria-hidden={!scrolled}
             />
-            {/* Text — fades and reduces size on scroll */}
             <div
               className={`text-left leading-none overflow-hidden whitespace-nowrap transition-all duration-[350ms] ease-in-out ${
                 scrolled
@@ -99,7 +108,6 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
                   }`}
                 >
                   {link.label}
-                  {/* Indicateur actif : trait accent animé */}
                   <span
                     className={`absolute bottom-0.5 left-1/2 -translate-x-1/2 h-[2px] rounded-full bg-accent-light transition-all duration-300 ${
                       isActive ? 'w-5 opacity-100' : 'w-0 opacity-0'
@@ -127,9 +135,9 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
             aria-label="Ouvrir le panier"
           >
             <ShoppingBag className="w-5 h-5" />
-            {items.length > 0 && (
+            {itemCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-gold-light text-navy text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 font-bold leading-none">
-                {items.length}
+                {itemCount}
               </span>
             )}
           </button>
@@ -197,4 +205,4 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
       )}
     </>
   );
-}
+});

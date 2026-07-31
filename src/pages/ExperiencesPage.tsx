@@ -78,7 +78,7 @@ export function ExperiencesPage({ onNavigate }: ExperiencesProps) {
                 style={{ transitionDelay: `${i * 60}ms` }}
               >
                 <div className="img-zoom relative h-64 overflow-hidden">
-                  <img src={exp.image} alt={exp.title} className="w-full h-full object-cover" />
+                  <img src={exp.image} alt={exp.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                   <div className="absolute top-4 left-4">
                     <span className={`${exp.badgeColor} text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg`}>
                       {exp.badge}

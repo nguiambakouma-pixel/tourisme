@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 
 export function useScrollReveal() {
   useEffect(() => {
     const els = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+    if (els.length === 0) return;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -24,13 +25,15 @@ export function useCounter(target: number, duration = 2000, start = false) {
   useEffect(() => {
     if (!start) return;
     let startTime: number | null = null;
+    let rafId: number;
     const step = (ts: number) => {
       if (!startTime) startTime = ts;
       const progress = Math.min((ts - startTime) / duration, 1);
       setCount(Math.floor(progress * target));
-      if (progress < 1) requestAnimationFrame(step);
+      if (progress < 1) rafId = requestAnimationFrame(step);
     };
-    requestAnimationFrame(step);
+    rafId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafId);
   }, [target, duration, start]);
   return count;
 }
@@ -39,11 +42,13 @@ export function useInView(threshold = 0.3) {
   const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) setInView(true); },
       { threshold }
     );
-    if (ref.current) observer.observe(ref.current);
+    observer.observe(el);
     return () => observer.disconnect();
   }, [threshold]);
   return { ref, inView };
@@ -52,11 +57,12 @@ export function useInView(threshold = 0.3) {
 export function useParallax(speed = 0.3) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
     const handle = () => {
-      if (!ref.current) return;
-      const rect = ref.current.getBoundingClientRect();
+      const rect = el.getBoundingClientRect();
       const offset = (window.innerHeight / 2 - rect.top - rect.height / 2) * speed;
-      ref.current.style.transform = `translateY(${offset}px)`;
+      el.style.transform = `translateY(${offset}px)`;
     };
     window.addEventListener('scroll', handle, { passive: true });
     return () => window.removeEventListener('scroll', handle);
@@ -83,19 +89,22 @@ export function useExperiences() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     supabase
       .from('experiences')
       .select('*')
       .order('id', { ascending: true })
-      .then(({ data, error }) => {
-        if (error) { setError(error.message); setLoading(false); return; }
-        setData((data ?? []).map((e) => ({
+      .then(({ data: result, error: err }) => {
+        if (cancelled) return;
+        if (err) { setError(err.message); setLoading(false); return; }
+        setData((result ?? []).map((e) => ({
           id: e.id, title: e.title, description: e.description, price: e.price,
           duration: e.duration, category: e.category, badge: e.badge,
           badgeColor: e.badge_color, image: e.image,
         })));
         setLoading(false);
       });
+    return () => { cancelled = true; };
   }, []);
 
   return { data, loading, error };
@@ -107,18 +116,21 @@ export function useAccommodations() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     supabase
       .from('accommodations')
       .select('*')
       .order('id', { ascending: true })
-      .then(({ data, error }) => {
-        if (error) { setError(error.message); setLoading(false); return; }
-        setData((data ?? []).map((a) => ({
+      .then(({ data: result, error: err }) => {
+        if (cancelled) return;
+        if (err) { setError(err.message); setLoading(false); return; }
+        setData((result ?? []).map((a) => ({
           id: a.id, title: a.title, type: a.type, price: a.price, rating: a.rating,
           reviews: a.reviews, features: a.features ?? [], image: a.image, description: a.description,
         })));
         setLoading(false);
       });
+    return () => { cancelled = true; };
   }, []);
 
   return { data, loading, error };
@@ -130,18 +142,21 @@ export function useBlogPosts() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     supabase
       .from('blog_posts')
       .select('*')
       .order('id', { ascending: true })
-      .then(({ data, error }) => {
-        if (error) { setError(error.message); setLoading(false); return; }
-        setData((data ?? []).map((b) => ({
+      .then(({ data: result, error: err }) => {
+        if (cancelled) return;
+        if (err) { setError(err.message); setLoading(false); return; }
+        setData((result ?? []).map((b) => ({
           id: b.id, title: b.title, excerpt: b.excerpt, content: b.content,
           category: b.category, date: b.date, readTime: b.read_time, image: b.image, author: b.author,
         })));
         setLoading(false);
       });
+    return () => { cancelled = true; };
   }, []);
 
   return { data, loading, error };

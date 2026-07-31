@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   Search, MapPin, Star, ArrowRight, Compass, Clock, Shield, Headphones,
@@ -18,6 +18,16 @@ const prefersReducedMotion =
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// Detect slow connection
+const isSlowConnection = typeof navigator !== 'undefined' && (
+  'connection' in navigator && 
+  (navigator as any).connection &&
+  ((navigator as any).connection.effectiveType === 'slow-2g' || 
+   (navigator as any).connection.effectiveType === '2g')
+);
+
+const usePosterInstead = prefersReducedMotion || isSlowConnection;
+
 const STATS = [
   { value: 1500, suffix: '+', label: 'Voyageurs satisfaits' },
   { value: 40,   suffix: '+', label: 'Expériences uniques' },
@@ -34,6 +44,93 @@ const WHY_US = [
   { icon: Sparkles,   title: 'Expériences authentiques',  desc: 'Des moments vrais, loin du tourisme de masse. Le Cameroun dans sa pureté.' },
 ];
 
+const SUGGESTIONS = ['Chutes de la Lobé', 'Jet Ski', 'Fruits de mer', 'Camping plage'];
+
+const StatCounter = memo(function StatCounter({ value, suffix, label, start, delay }: { value: number; suffix: string; label: string; start: boolean; delay: number }) {
+  const count = useCounter(value, 2000, start);
+  return (
+    <div
+      className="reveal text-center bg-white/60 backdrop-blur rounded-3xl p-7 border border-white/80 shadow-lg"
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      <div className="font-serif text-5xl md:text-6xl font-bold gradient-text">
+        {count}{suffix}
+      </div>
+      <div className="text-slate-600 font-medium mt-3 text-sm md:text-base">{label}</div>
+    </div>
+  );
+});
+
+function HeroVideo() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [videoReady, setVideoReady] = useState(false);
+
+  // Only start loading video when section is near viewport
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || usePosterInstead) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVideoReady(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Start video after first paint (delay decoding)
+  useEffect(() => {
+    if (!videoReady || !videoRef.current) return;
+    const video = videoRef.current;
+    const timer = setTimeout(() => {
+      video.play().catch(() => {});
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [videoReady]);
+
+  if (usePosterInstead) {
+    return (
+      <img
+        src={HERO_POSTER}
+        alt="Plage de Kribi"
+        className="absolute inset-0 w-full h-full object-cover"
+        loading="eager"
+        decoding="async"
+      />
+    );
+  }
+
+  return (
+    <div ref={sectionRef} className="absolute inset-0">
+      <img
+        src={HERO_POSTER}
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover"
+        loading="eager"
+        aria-hidden="true"
+      />
+      {videoReady && (
+        <video
+          ref={videoRef}
+          className="absolute inset-0 w-full h-full object-cover"
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={HERO_POSTER}
+        >
+          <source src={HERO_VIDEO} type="video/mp4" />
+        </video>
+      )}
+    </div>
+  );
+}
+
 export function HomePage({ onNavigate }: HomeProps) {
   usePageMeta('StayEatSee+ | Explorez Kribi Autrement', 'Vivez des expériences authentiques entre mer, forêt et culture locale à Kribi, Cameroun. Excursions, hébergements et gastronomie locale.');
   useScrollReveal();
@@ -43,39 +140,43 @@ export function HomePage({ onNavigate }: HomeProps) {
   const [searchValue, setSearchValue] = useState('');
   const [searchDone, setSearchDone] = useState(false);
   const { ref: statsRef, inView: statsInView } = useInView(0.3);
-  const [scrollY, setScrollY] = useState(0);
 
+  // Throttled scrollY for parallax
+  const [scrollY, setScrollY] = useState(0);
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const parallaxOffset = useMemo(() => Math.min(scrollY * 0.15, 20), [scrollY]);
+  const videoParallax = useMemo(() => Math.min(scrollY * 0.05, 8), [scrollY]);
+  const textOpacity = useMemo(() => 1 - Math.min(scrollY / 1200, 0.08), [scrollY]);
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const dx = (e.clientX / window.innerWidth - 0.5) * 12;
-      const dy = (e.clientY / window.innerHeight - 0.5) * 12;
-      setMousePos({ x: dx, y: dy });
-    };
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+  const scrollToNext = useCallback(() => {
+    window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
   }, []);
 
-  const parallaxOffset = Math.min(scrollY * 0.15, 20);
-  const videoParallax = Math.min(scrollY * 0.05, 8);
-  const textOpacity = 1 - Math.min(scrollY / 1200, 0.08);
-
-  const scrollToNext = () => {
-    window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
-  };
-
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     setSearchDone(true);
     setTimeout(() => setSearchDone(false), 3500);
-  };
+  }, []);
+
+  const handleSuggestionClick = useCallback((tag: string) => {
+    setSearchValue(tag);
+    setSearchDone(true);
+    setTimeout(() => setSearchDone(false), 3500);
+  }, []);
 
   return (
     <div className="page-enter">
@@ -86,25 +187,7 @@ export function HomePage({ onNavigate }: HomeProps) {
           className="absolute inset-0 gpu-layer"
           style={{ transform: prefersReducedMotion ? 'none' : `translateY(${videoParallax}px)` }}
         >
-          {prefersReducedMotion ? (
-            <img
-              src={HERO_POSTER}
-              alt="Plage de Kribi"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-          ) : (
-            <video
-              className="absolute inset-0 w-full h-full object-cover"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              poster={HERO_POSTER}
-            >
-              <source src={HERO_VIDEO} type="video/mp4" />
-            </video>
-          )}
+          <HeroVideo />
           <div className="absolute inset-0 hero-bg"></div>
           <div className="absolute inset-0 hero-vignette"></div>
         </div>
@@ -115,102 +198,25 @@ export function HomePage({ onNavigate }: HomeProps) {
             className="w-full gpu-layer"
             style={{
               opacity: textOpacity,
-              transform: `translate(${mousePos.x}px, ${mousePos.y}px) translateY(${prefersReducedMotion ? 0 : parallaxOffset}px)`,
+              transform: `translateY(${prefersReducedMotion ? 0 : parallaxOffset}px)`,
               transition: 'transform 0.1s ease-out',
             }}
           >
-            {/* Line 1 — Pour votre séjour à */}
             {prefersReducedMotion ? (
-              <p className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] hero-text-shadow">
-                Pour votre séjour à
-              </p>
-            ) : (
-              <motion.p
-                initial={{ opacity: 0, y: 60, filter: 'blur(12px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] hero-text-shadow"
-              >
-                Pour votre séjour à
-              </motion.p>
-            )}
-
-            {/* Line 2 — KRIBI (170% larger) */}
-            {prefersReducedMotion ? (
-              <h1 className="font-display font-semibold text-[42px] md:text-[54px] lg:text-[68px] xl:text-[76px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow">
-                KRIBI,
-              </h1>
-            ) : (
-              <motion.h1
-                initial={{ opacity: 0, scale: 0.78, rotateX: 25, filter: 'blur(15px)' }}
-                animate={{ opacity: 1, scale: 1, rotateX: 0, filter: 'blur(0px)' }}
-                transition={{ delay: 0.4, type: 'spring', stiffness: 90, damping: 18 }}
-                className="font-display font-semibold text-[42px] md:text-[54px] lg:text-[68px] xl:text-[76px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow"
-              >
-                KRIBI,
-              </motion.h1>
-            )}
-
-            {/* Line 3 — nous nous occupons de */}
-            {prefersReducedMotion ? (
-              <p className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow">
-                nous nous occupons de
-              </p>
-            ) : (
-              <motion.p
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.85, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow"
-              >
-                nous nous occupons de
-              </motion.p>
-            )}
-
-            {/* Line 4 — TOUT. with gold accent + shine */}
-            {prefersReducedMotion ? (
-              <p className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow">
-                <span className="text-accent hero-tout-glow">TOUT.</span>
-              </p>
-            ) : (
-              <motion.p
-                initial={{ opacity: 0, scale: 0.82 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.15, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow"
-              >
-                <span className="text-accent hero-tout-glow relative inline-block">
-                  TOUT.
-                  <span className="tout-shine-effect absolute inset-0">TOUT.</span>
-                </span>
-              </motion.p>
-            )}
-
-            {/* Buttons — appear after all text */}
-            {prefersReducedMotion ? (
-              <div className="mt-14 md:mt-16 flex flex-col sm:flex-row gap-5">
-                <button
-                  onClick={() => onNavigate('experiences')}
-                  className="btn-shimmer text-white px-8 py-4 rounded-xl font-semibold text-base flex items-center justify-center gap-2 shadow-accent group hover:-translate-y-[5px] hover:shadow-lg hover:scale-[1.04] transition-all duration-300"
-                >
-                  Découvrir nos expériences
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </button>
-                <button
-                  onClick={() => onNavigate('contact')}
-                  className="glass text-white px-8 py-4 rounded-xl font-semibold text-base flex items-center justify-center gap-2 hover:bg-white/25 hover:-translate-y-[5px] hover:shadow-lg hover:scale-[1.04] transition-all duration-300"
-                >
-                  Nous contacter
-                </button>
-              </div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.6, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                className="mt-14 md:mt-16"
-              >
-                <div className="flex flex-col sm:flex-row gap-5">
+              <>
+                <p className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] hero-text-shadow">
+                  Pour votre séjour à
+                </p>
+                <h1 className="font-display font-semibold text-[42px] md:text-[54px] lg:text-[68px] xl:text-[76px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow">
+                  KRIBI,
+                </h1>
+                <p className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow">
+                  nous nous occupons de
+                </p>
+                <p className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow">
+                  <span className="text-accent hero-tout-glow">TOUT.</span>
+                </p>
+                <div className="mt-14 md:mt-16 flex flex-col sm:flex-row gap-5">
                   <button
                     onClick={() => onNavigate('experiences')}
                     className="btn-shimmer text-white px-8 py-4 rounded-xl font-semibold text-base flex items-center justify-center gap-2 shadow-accent group hover:-translate-y-[5px] hover:shadow-lg hover:scale-[1.04] transition-all duration-300"
@@ -225,12 +231,72 @@ export function HomePage({ onNavigate }: HomeProps) {
                     Nous contacter
                   </button>
                 </div>
-              </motion.div>
+              </>
+            ) : (
+              <>
+                <motion.p
+                  initial={{ opacity: 0, y: 60, filter: 'blur(12px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] hero-text-shadow"
+                >
+                  Pour votre séjour à
+                </motion.p>
+                <motion.h1
+                  initial={{ opacity: 0, scale: 0.78, rotateX: 25, filter: 'blur(15px)' }}
+                  animate={{ opacity: 1, scale: 1, rotateX: 0, filter: 'blur(0px)' }}
+                  transition={{ delay: 0.4, type: 'spring', stiffness: 90, damping: 18 }}
+                  className="font-display font-semibold text-[42px] md:text-[54px] lg:text-[68px] xl:text-[76px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow"
+                >
+                  KRIBI,
+                </motion.h1>
+                <motion.p
+                  initial={{ opacity: 0, x: -50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.85, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow"
+                >
+                  nous nous occupons de
+                </motion.p>
+                <motion.p
+                  initial={{ opacity: 0, scale: 0.82 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 1.15, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow"
+                >
+                  <span className="text-accent hero-tout-glow relative inline-block">
+                    TOUT.
+                    <span className="tout-shine-effect absolute inset-0">TOUT.</span>
+                  </span>
+                </motion.p>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.6, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                  className="mt-14 md:mt-16"
+                >
+                  <div className="flex flex-col sm:flex-row gap-5">
+                    <button
+                      onClick={() => onNavigate('experiences')}
+                      className="btn-shimmer text-white px-8 py-4 rounded-xl font-semibold text-base flex items-center justify-center gap-2 shadow-accent group hover:-translate-y-[5px] hover:shadow-lg hover:scale-[1.04] transition-all duration-300"
+                    >
+                      Découvrir nos expériences
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                    <button
+                      onClick={() => onNavigate('contact')}
+                      className="glass text-white px-8 py-4 rounded-xl font-semibold text-base flex items-center justify-center gap-2 hover:bg-white/25 hover:-translate-y-[5px] hover:shadow-lg hover:scale-[1.04] transition-all duration-300"
+                    >
+                      Nous contacter
+                    </button>
+                  </div>
+                </motion.div>
+              </>
             )}
           </div>
         </div>
 
-        {/* Scroll indicator — Découvrir */}
+        {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 cursor-pointer" onClick={scrollToNext}>
           <span className="text-white/60 text-xs font-medium tracking-[0.2em] uppercase" style={{ fontFamily: 'Manrope, sans-serif' }}>
             Découvrir
@@ -273,10 +339,10 @@ export function HomePage({ onNavigate }: HomeProps) {
           )}
           <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
             <span className="text-white/90 text-xs font-medium">Suggestions :</span>
-            {['Chutes de la Lobé', 'Jet Ski', 'Fruits de mer', 'Camping plage'].map((tag) => (
+            {SUGGESTIONS.map((tag) => (
               <button
                 key={tag}
-                onClick={() => { setSearchValue(tag); setSearchDone(true); setTimeout(() => setSearchDone(false), 3500); }}
+                onClick={() => handleSuggestionClick(tag)}
                 className="text-xs px-3 py-1.5 rounded-full glass-dark text-white/90 hover:bg-white hover:text-brand transition-all duration-200"
               >
                 {tag}
@@ -335,7 +401,7 @@ export function HomePage({ onNavigate }: HomeProps) {
                 style={{ transitionDelay: `${i * 80}ms` }}
               >
                 <div className="img-zoom relative h-60 overflow-hidden">
-                  <img src={exp.image} alt={exp.title} className="w-full h-full object-cover" />
+                  <img src={exp.image} alt={exp.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                   <div className="absolute top-4 left-4">
                     <span className={`${exp.badgeColor} text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg`}>
                       {exp.badge}
@@ -416,7 +482,7 @@ export function HomePage({ onNavigate }: HomeProps) {
                 style={{ transitionDelay: `${i * 80}ms` }}
               >
                 <div className="img-zoom relative h-52 overflow-hidden">
-                  <img src={acc.image} alt={acc.title} className="w-full h-full object-cover" />
+                  <img src={acc.image} alt={acc.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                   <div className="absolute top-3 left-3 bg-white/90 backdrop-blur px-2.5 py-1 rounded-full text-xs font-bold text-brand">
                     {acc.type}
                   </div>
@@ -497,6 +563,8 @@ export function HomePage({ onNavigate }: HomeProps) {
             src="https://images.pexels.com/photos/1032650/pexels-photo-1032650.jpeg?auto=compress&cs=tinysrgb&w=1600"
             alt=""
             className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-brand/95 via-brand/80 to-sky/70"></div>
         </div>
@@ -526,21 +594,6 @@ export function HomePage({ onNavigate }: HomeProps) {
           </div>
         </div>
       </section>
-    </div>
-  );
-}
-
-function StatCounter({ value, suffix, label, start, delay }: { value: number; suffix: string; label: string; start: boolean; delay: number }) {
-  const count = useCounter(value, 2000, start);
-  return (
-    <div
-      className="reveal text-center bg-white/60 backdrop-blur rounded-3xl p-7 border border-white/80 shadow-lg"
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      <div className="font-serif text-5xl md:text-6xl font-bold gradient-text">
-        {count}{suffix}
-      </div>
-      <div className="text-slate-600 font-medium mt-3 text-sm md:text-base">{label}</div>
     </div>
   );
 }

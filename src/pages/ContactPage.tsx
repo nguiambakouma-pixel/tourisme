@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { MapPin, Mail, Phone, Clock, MessageCircle, Send, CheckCircle2, Instagram, Facebook, Twitter } from 'lucide-react';
 import { PageHero } from '@/components/ui';
-import { socials } from '@/data';
+import { socials } from '@/data/socials';
 import { usePageMeta, useScrollReveal } from '@/hooks';
 
 export function ContactPage() {

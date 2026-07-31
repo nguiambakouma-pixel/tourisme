@@ -79,7 +79,7 @@ export function AccommodationsPage({ onNavigate }: AccommodationsProps) {
                 style={{ transitionDelay: `${i * 80}ms` }}
               >
                 <div className="img-zoom relative h-60 overflow-hidden">
-                  <img src={acc.image} alt={acc.title} className="w-full h-full object-cover" />
+                  <img src={acc.image} alt={acc.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                   <div className="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full text-xs font-bold text-brand">
                     {acc.type}
                   </div>

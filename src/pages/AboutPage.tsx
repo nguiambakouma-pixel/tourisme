@@ -57,16 +57,16 @@ export function AboutPage() {
             </div>
             <div className="reveal-right grid grid-cols-2 gap-4">
               <div className="img-zoom rounded-3xl overflow-hidden h-72 shadow-xl2">
-                <img src="https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=600" alt="" className="w-full h-full object-cover" />
+                <img src="https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=600" alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
               </div>
               <div className="img-zoom rounded-3xl overflow-hidden h-72 shadow-xl2 mt-10">
-                <img src="https://images.pexels.com/photos/2559942/pexels-photo-2559942.jpeg?auto=compress&cs=tinysrgb&w=600" alt="" className="w-full h-full object-cover" />
+                <img src="https://images.pexels.com/photos/2559942/pexels-photo-2559942.jpeg?auto=compress&cs=tinysrgb&w=600" alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
               </div>
               <div className="img-zoom rounded-3xl overflow-hidden h-72 shadow-xl2 -mt-6">
-                <img src="https://images.pexels.com/photos/1148496/pexels-photo-1148496.jpeg?auto=compress&cs=tinysrgb&w=600" alt="" className="w-full h-full object-cover" />
+                <img src="https://images.pexels.com/photos/1148496/pexels-photo-1148496.jpeg?auto=compress&cs=tinysrgb&w=600" alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
               </div>
               <div className="img-zoom rounded-3xl overflow-hidden h-72 shadow-xl2">
-                <img src="https://images.pexels.com/photos/1449729/pexels-photo-1449729.jpeg?auto=compress&cs=tinysrgb&w=600" alt="" className="w-full h-full object-cover" />
+                <img src="https://images.pexels.com/photos/1449729/pexels-photo-1449729.jpeg?auto=compress&cs=tinysrgb&w=600" alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
               </div>
             </div>
           </div>
@@ -178,7 +178,7 @@ export function AboutPage() {
                 style={{ transitionDelay: `${i * 90}ms` }}
               >
                 <div className="img-zoom h-72 overflow-hidden">
-                  <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
+                  <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                 </div>
                 <div className="p-6 text-center">
                   <h3 className="font-serif text-lg text-brand">{member.name}</h3>

@@ -15,9 +15,20 @@
     <meta property="og:description" content="Agence touristique premium à Kribi, Cameroun. Excursions, hébergements et expériences authentiques." />
     <meta property="og:image" content="https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <!-- Font preconnects -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Preload primary font (Cormorant Garamond 600) -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+
+    <!-- Fallback font loading -->
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" />
+    </noscript>
+
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -25,7 +36,7 @@
   "name": "StayEatSee+",
   "description": "Agence touristique premium à Kribi, Cameroun. Excursions, hébergements et expériences authentiques entre mer, forêt et culture locale.",
   "url": "https://stayeatsee.vercel.app",
-  "telephone": "+237680123456",
+  "telephone": "+237688150361",
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "Avenue du Port",

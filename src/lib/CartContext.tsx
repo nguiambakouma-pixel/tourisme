@@ -1,11 +1,11 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, ReactNode, useCallback } from 'react';
 
 export interface CartItem {
-  key: string; // format "experience:12" ou "accommodation:3"
+  key: string;
   type: 'experience' | 'accommodation';
   id: number;
   title: string;
-  price: string; // format tel quel, ex "25 000"
+  price: string;
   image: string;
 }
 
@@ -44,30 +44,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 
-  const addItem = (item: CartItem) => {
+  const addItem = useCallback((item: CartItem) => {
     setItems((prev) => (prev.some((i) => i.key === item.key) ? prev : [...prev, item]));
-  };
+  }, []);
 
-  const removeItem = (key: string) => {
+  const removeItem = useCallback((key: string) => {
     setItems((prev) => prev.filter((i) => i.key !== key));
-  };
+  }, []);
 
-  const isInCart = (key: string) => items.some((i) => i.key === key);
+  const isInCart = useCallback((key: string) => {
+    return items.some((i) => i.key === key);
+  }, [items]);
 
-  const clear = () => setItems([]);
+  const clear = useCallback(() => setItems([]), []);
 
-  const total = items.reduce((sum, item) => sum + parsePrice(item.price), 0);
+  const total = useMemo(() => items.reduce((sum, item) => sum + parsePrice(item.price), 0), [items]);
+
+  const value = useMemo<CartContextValue>(() => ({
+    items, isOpen, addItem, removeItem, isInCart, clear,
+    openCart: () => setIsOpen(true),
+    closeCart: () => setIsOpen(false),
+    toggleCart: () => setIsOpen((o) => !o),
+    total,
+  }), [items, isOpen, addItem, removeItem, isInCart, clear, total]);
 
   return (
-    <CartContext.Provider
-      value={{
-        items, isOpen, addItem, removeItem, isInCart, clear,
-        openCart: () => setIsOpen(true),
-        closeCart: () => setIsOpen(false),
-        toggleCart: () => setIsOpen((o) => !o),
-        total,
-      }}
-    >
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );

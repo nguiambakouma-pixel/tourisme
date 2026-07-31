@@ -1,7 +1,8 @@
 
 import { useState } from 'react';
 import { MapPin, Mail, Phone, Instagram, Facebook, Twitter, Youtube, Send, Heart } from 'lucide-react';
-import { NAV_LINKS, socials } from '@/data';
+import { NAV_LINKS } from '@/data';
+import { socials } from '@/data/socials';
 
 interface FooterProps {
   onNavigate: (page: string) => void;
