@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, memo, useMemo, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Search, MapPin, Star, ArrowRight, Compass, Clock, Shield, Headphones,
-  BadgeCheck, Wallet, Sparkles, Quote, ShoppingCart, Check,
+  Search, Star, ArrowRight, Compass, Clock, Shield, Headphones,
+  BadgeCheck, Wallet, Sparkles, Quote, ShoppingCart, Check, X, SlidersHorizontal,
 } from 'lucide-react';
 import { SectionTitle } from '@/components/ui';
 import { AccommodationFeatures } from '@/components/AccommodationFeatures';
@@ -11,6 +11,41 @@ import { useCounter, useInView, usePageMeta, useScrollReveal, useExperiences, us
 import { useCart } from '@/lib/CartContext';
 
 interface HomeProps { onNavigate: (page: string) => void }
+
+// ── Typing animation hook ──────────────────────────────────────────
+function useTypingAnimation(lines: string[], opts?: { charDelay?: number; lineDelay?: number; startDelay?: number }) {
+  const { charDelay = 50, lineDelay = 600, startDelay = 200 } = opts ?? {};
+  const [displayed, setDisplayed] = useState<string[]>(lines.map(() => ''));
+  const [currentLine, setCurrentLine] = useState(0);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    if (currentLine >= lines.length) { setDone(true); return; }
+    const line = lines[currentLine];
+    let charIdx = 0;
+
+    const typeChar = () => {
+      charIdx++;
+      setDisplayed(prev => {
+        const next = [...prev];
+        next[currentLine] = line.slice(0, charIdx);
+        return next;
+      });
+      if (charIdx < line.length) {
+        timeout = setTimeout(typeChar, charDelay);
+      } else {
+        timeout = setTimeout(() => setCurrentLine(l => l + 1), lineDelay);
+      }
+    };
+
+    const initial = currentLine === 0 ? startDelay : 0;
+    timeout = setTimeout(typeChar, initial);
+    return () => clearTimeout(timeout);
+  }, [currentLine]);
+
+  return { displayed, done };
+}
 
 const HERO_POSTER = '/images/hero/kribi-hero-poster.jpg';
 const HERO_VIDEO  = '/videos/kribi-hero.mp4';
@@ -44,7 +79,7 @@ const WHY_US = [
   { icon: Sparkles,   title: 'Expériences authentiques',  desc: 'Des moments vrais, loin du tourisme de masse. Le Cameroun dans sa pureté.' },
 ];
 
-const SUGGESTIONS = ['Chutes de la Lobé', 'Jet Ski', 'Fruits de mer', 'Camping plage'];
+const SUGGESTIONS = ['Chutes de la Lobé', 'Jet Ski'];
 
 const StatCounter = memo(function StatCounter({ value, suffix, label, start, delay }: { value: number; suffix: string; label: string; start: boolean; delay: number }) {
   const count = useCounter(value, 2000, start);
@@ -89,6 +124,107 @@ function HeroVideo() {
   );
 }
 
+// ── Hero Slogan with typing animation ─────────────────────────────
+function HeroSloganAnimated({ onNavigate }: { onNavigate: (p: string) => void }) {
+  const SLOGAN_LINES = [
+    'Pour votre séjour à',
+    'KRIBI,',
+    'nous nous occupons de',
+    'TOUT.',
+  ];
+  const { displayed, done } = useTypingAnimation(SLOGAN_LINES, {
+    charDelay: 42,
+    lineDelay: 380,
+    startDelay: 250,
+  });
+
+  const lineClasses = (i: number) => {
+    if (i === 1) {
+      // KRIBI
+      return 'font-slogan-bold text-[46px] sm:text-[58px] md:text-[68px] lg:text-[84px] xl:text-[92px] text-[#F8F8F5] leading-[1.0] tracking-[0.04em] mt-1 hero-text-shadow block';
+    }
+    if (i === 3) {
+      // TOUT
+      return 'font-slogan-bold text-[26px] sm:text-[32px] md:text-[38px] lg:text-[46px] xl:text-[52px] leading-[1.3] mt-2 hero-text-shadow block';
+    }
+    // subtitle lines
+    return 'font-slogan text-[20px] sm:text-[24px] md:text-[30px] lg:text-[37px] xl:text-[42px] text-[#F8F8F5] leading-[1.3] hero-text-shadow block';
+  };
+
+  return (
+    <>
+      <div className="flex flex-col gap-0.5">
+        {SLOGAN_LINES.map((line, i) => {
+          const isActive = displayed[i].length > 0 && displayed[i].length < line.length;
+          const isTyped  = displayed[i].length === line.length;
+          const isEmpty  = displayed[i].length === 0;
+          if (isEmpty) return null;
+
+          if (i === 3) {
+            // TOUT. — special accent render
+            return (
+              <span key={i} className={lineClasses(i)}>
+                <span className="text-accent hero-tout-glow relative inline-block">
+                  {displayed[i]}
+                  {isTyped && (
+                    <span className="tout-shine-effect absolute inset-0">{displayed[i]}</span>
+                  )}
+                </span>
+                {isActive && !done && (
+                  <span className="inline-block ml-0.5 text-accent animate-[typing-cursor_1.1s_step-end_infinite]">|</span>
+                )}
+              </span>
+            );
+          }
+
+          return (
+            <span key={i} className={lineClasses(i)}>
+              {i === 1 ? (
+                // KRIBI — use motion for extra pop after typing
+                <motion.span
+                  initial={false}
+                  animate={isTyped ? { letterSpacing: '0.06em' } : { letterSpacing: '0.04em' }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  className="inline-block"
+                >
+                  {displayed[i]}
+                </motion.span>
+              ) : (
+                displayed[i]
+              )}
+              {isActive && !done && (
+                <span className="inline-block ml-0.5 text-accent/80 animate-[typing-cursor_1.1s_step-end_infinite]">|</span>
+              )}
+            </span>
+          );
+        })}
+      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: done ? 1 : 0, y: done ? 0 : 20 }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="mt-10 md:mt-14"
+      >
+        <div className="flex flex-col sm:flex-row gap-4">
+          <button
+            onClick={() => onNavigate('experiences')}
+            className="btn-shimmer text-white px-7 py-4 rounded-xl font-semibold text-sm sm:text-base flex items-center justify-center gap-2 shadow-accent group hover:-translate-y-[5px] hover:shadow-lg hover:scale-[1.04] transition-all duration-300"
+          >
+            Découvrir nos expériences
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </button>
+          <button
+            onClick={() => onNavigate('contact')}
+            className="glass text-white px-7 py-4 rounded-xl font-semibold text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-white/25 hover:-translate-y-[5px] hover:shadow-lg hover:scale-[1.04] transition-all duration-300"
+          >
+            Nous contacter
+          </button>
+        </div>
+      </motion.div>
+    </>
+  );
+}
+
 export function HomePage({ onNavigate }: HomeProps) {
   usePageMeta('StayEatSee+ | Explorez Kribi Autrement', 'Vivez des expériences authentiques entre mer, forêt et culture locale à Kribi, Cameroun. Excursions, hébergements et gastronomie locale.');
   useScrollReveal();
@@ -96,8 +232,31 @@ export function HomePage({ onNavigate }: HomeProps) {
   const { data: ACCOMMODATIONS, loading: accLoading, error: accError } = useAccommodations();
   const { addItem, isInCart, removeItem } = useCart();
   const [searchValue, setSearchValue] = useState('');
-  const [searchDone, setSearchDone] = useState(false);
+  const [activeQuery, setActiveQuery] = useState(''); // query currently filtering results
   const { ref: statsRef, inView: statsInView } = useInView(0.3);
+
+  // Derived: filtered data
+  const filteredExperiences = useMemo(() => {
+    if (!activeQuery) return EXPERIENCES.slice(0, 6);
+    const q = activeQuery.toLowerCase();
+    return EXPERIENCES.filter(
+      (e) =>
+        e.title.toLowerCase().includes(q) ||
+        (e.category && e.category.toLowerCase().includes(q)) ||
+        (e.description && e.description.toLowerCase().includes(q))
+    );
+  }, [activeQuery, EXPERIENCES]);
+
+  const filteredAccommodations = useMemo(() => {
+    if (!activeQuery) return ACCOMMODATIONS;
+    const q = activeQuery.toLowerCase();
+    return ACCOMMODATIONS.filter(
+      (a) =>
+        a.title.toLowerCase().includes(q) ||
+        (a.type && a.type.toLowerCase().includes(q)) ||
+        (a.description && a.description.toLowerCase().includes(q))
+    );
+  }, [activeQuery, ACCOMMODATIONS]);
 
   // Throttled scrollY for parallax
   const [scrollY, setScrollY] = useState(0);
@@ -124,16 +283,31 @@ export function HomePage({ onNavigate }: HomeProps) {
     window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
   }, []);
 
+  const runSearch = useCallback((q: string) => {
+    const trimmed = q.trim();
+    setActiveQuery(trimmed);
+    // Scroll to results if there's a query
+    if (trimmed) {
+      setTimeout(() => {
+        const el = document.getElementById('search-results');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, []);
+
   const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
-    setSearchDone(true);
-    setTimeout(() => setSearchDone(false), 3500);
-  }, []);
+    runSearch(searchValue);
+  }, [searchValue, runSearch]);
 
   const handleSuggestionClick = useCallback((tag: string) => {
     setSearchValue(tag);
-    setSearchDone(true);
-    setTimeout(() => setSearchDone(false), 3500);
+    runSearch(tag);
+  }, [runSearch]);
+
+  const handleClearSearch = useCallback(() => {
+    setSearchValue('');
+    setActiveQuery('');
   }, []);
 
   return (
@@ -162,16 +336,16 @@ export function HomePage({ onNavigate }: HomeProps) {
           >
             {prefersReducedMotion ? (
               <>
-                <p className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] hero-text-shadow">
+                <p className="font-slogan text-[22px] md:text-[28px] lg:text-[36px] xl:text-[40px] text-[#F8F8F5] leading-[1.2] hero-text-shadow">
                   Pour votre séjour à
                 </p>
-                <h1 className="font-display font-semibold text-[42px] md:text-[54px] lg:text-[68px] xl:text-[76px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow">
+                <h1 className="font-slogan-bold text-[48px] md:text-[62px] lg:text-[78px] xl:text-[88px] text-[#F8F8F5] leading-[1] tracking-[0.04em] mt-2 hero-text-shadow">
                   KRIBI,
                 </h1>
-                <p className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow">
+                <p className="font-slogan text-[22px] md:text-[28px] lg:text-[36px] xl:text-[40px] text-[#F8F8F5] leading-[1.2] mt-3 hero-text-shadow">
                   nous nous occupons de
                 </p>
-                <p className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow">
+                <p className="font-slogan-bold text-[22px] md:text-[28px] lg:text-[36px] xl:text-[40px] text-[#F8F8F5] leading-[1.2] mt-3 hero-text-shadow">
                   <span className="text-accent hero-tout-glow">TOUT.</span>
                 </p>
                 <div className="mt-14 md:mt-16 flex flex-col sm:flex-row gap-5">
@@ -191,65 +365,7 @@ export function HomePage({ onNavigate }: HomeProps) {
                 </div>
               </>
             ) : (
-              <>
-                <motion.p
-                  initial={{ opacity: 0, y: 60, filter: 'blur(12px)' }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                  transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                  className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] hero-text-shadow"
-                >
-                  Pour votre séjour à
-                </motion.p>
-                <motion.h1
-                  initial={{ opacity: 0, scale: 0.78, rotateX: 25, filter: 'blur(15px)' }}
-                  animate={{ opacity: 1, scale: 1, rotateX: 0, filter: 'blur(0px)' }}
-                  transition={{ delay: 0.4, type: 'spring', stiffness: 90, damping: 18 }}
-                  className="font-display font-semibold text-[42px] md:text-[54px] lg:text-[68px] xl:text-[76px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow"
-                >
-                  KRIBI,
-                </motion.h1>
-                <motion.p
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.85, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow"
-                >
-                  nous nous occupons de
-                </motion.p>
-                <motion.p
-                  initial={{ opacity: 0, scale: 0.82 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 1.15, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                  className="font-display font-semibold text-[25px] md:text-[32px] lg:text-[40px] xl:text-[45px] text-[#F8F8F5] leading-[1.05] tracking-[-0.03em] mt-3 hero-text-shadow"
-                >
-                  <span className="text-accent hero-tout-glow relative inline-block">
-                    TOUT.
-                    <span className="tout-shine-effect absolute inset-0">TOUT.</span>
-                  </span>
-                </motion.p>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.6, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                  className="mt-14 md:mt-16"
-                >
-                  <div className="flex flex-col sm:flex-row gap-5">
-                    <button
-                      onClick={() => onNavigate('experiences')}
-                      className="btn-shimmer text-white px-8 py-4 rounded-xl font-semibold text-base flex items-center justify-center gap-2 shadow-accent group hover:-translate-y-[5px] hover:shadow-lg hover:scale-[1.04] transition-all duration-300"
-                    >
-                      Découvrir nos expériences
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                    <button
-                      onClick={() => onNavigate('contact')}
-                      className="glass text-white px-8 py-4 rounded-xl font-semibold text-base flex items-center justify-center gap-2 hover:bg-white/25 hover:-translate-y-[5px] hover:shadow-lg hover:scale-[1.04] transition-all duration-300"
-                    >
-                      Nous contacter
-                    </button>
-                  </div>
-                </motion.div>
-              </>
+              <HeroSloganAnimated onNavigate={onNavigate} />
             )}
           </div>
         </div>
@@ -269,44 +385,74 @@ export function HomePage({ onNavigate }: HomeProps) {
       </section>
 
       {/* ═══════════════ SEARCH BAR ═══════════════ */}
-      <section className="relative -mt-16 z-30 px-5">
+      <section className="search-section relative -mt-16 z-30 px-4 sm:px-5">
         <div className="max-w-3xl mx-auto">
-          {searchDone ? (
-            <div className="search-pill p-8 text-center animate-scale-in">
-              <div className="w-14 h-14 rounded-full bg-accent-pale mx-auto mb-3 flex items-center justify-center">
-                <BadgeCheck className="w-7 h-7 text-accent" />
-              </div>
-              <p className="text-brand font-semibold text-lg">Recherche terminée ! Découvrez nos meilleures offres ci-dessous.</p>
+          {/* Search form — always visible */}
+          <form
+            onSubmit={handleSearch}
+            className="search-pill p-2 flex items-center gap-2 overflow-hidden"
+          >
+            <div className="flex-1 flex items-center gap-3 px-4 py-2 min-w-0">
+              <Search className="w-5 h-5 text-sky shrink-0" />
+              <input
+                type="text"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                placeholder="Rechercher activités, logements, excursions..."
+                className="w-full bg-transparent text-brand placeholder-slate-400 focus:outline-none text-sm py-2"
+              />
+              {searchValue && (
+                <button
+                  type="button"
+                  onClick={handleClearSearch}
+                  className="text-slate-400 hover:text-brand transition-colors shrink-0"
+                  title="Effacer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
-          ) : (
-            <form onSubmit={handleSearch} className="search-pill p-2 flex items-center gap-2 overflow-hidden">
-              <div className="flex-1 flex items-center gap-3 px-4 py-2 min-w-0">
-                <Search className="w-5 h-5 text-sky shrink-0" />
-                <input
-                  type="text"
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                  placeholder="Rechercher activités, logements, excursions..."
-                  className="w-full bg-transparent text-brand placeholder-slate-400 focus:outline-none text-sm py-2"
-                />
-              </div>
-              <button type="submit" className="btn-shimmer text-white px-6 py-3 rounded-full font-semibold text-sm flex items-center gap-2 whitespace-nowrap shrink-0">
-                Rechercher <ArrowRight className="w-4 h-4" />
-              </button>
-            </form>
+            <button
+              type="submit"
+              className="btn-shimmer text-white px-5 sm:px-6 py-3 rounded-full font-semibold text-sm flex items-center gap-1.5 whitespace-nowrap shrink-0"
+            >
+              Rechercher <ArrowRight className="w-4 h-4" />
+            </button>
+          </form>
+
+          {/* Active filter badge */}
+          {activeQuery && (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-3 flex items-center justify-center gap-2"
+            >
+              <span className="text-white/80 text-xs">Filtré par :</span>
+              <span className="flex items-center gap-1.5 bg-white/20 backdrop-blur text-white text-xs font-semibold px-3 py-1.5 rounded-full border border-white/25">
+                <SlidersHorizontal className="w-3 h-3" />
+                {activeQuery}
+                <button onClick={handleClearSearch} className="ml-1 hover:text-accent transition-colors">
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            </motion.div>
           )}
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
-            <span className="text-white/90 text-xs font-medium">Suggestions :</span>
-            {SUGGESTIONS.map((tag) => (
-              <button
-                key={tag}
-                onClick={() => handleSuggestionClick(tag)}
-                className="text-xs px-3 py-1.5 rounded-full glass-dark text-white/90 hover:bg-white hover:text-brand transition-all duration-200"
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
+
+          {/* Suggestions */}
+          {!activeQuery && (
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-2 gap-y-2">
+              <span className="text-white/70 text-xs font-medium shrink-0">Suggestions :</span>
+              {SUGGESTIONS.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => handleSuggestionClick(tag)}
+                  className="text-xs px-3 py-1.5 rounded-full glass-dark text-white/90 hover:bg-white hover:text-brand transition-all duration-200 whitespace-nowrap"
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -323,20 +469,24 @@ export function HomePage({ onNavigate }: HomeProps) {
       </section>
 
       {/* ═══════════════ EXPERIENCES ═══════════════ */}
-      <section className="py-22 bg-white">
+      <section id="search-results" className="py-22 bg-white">
         <div className="max-w-7xl mx-auto px-5 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <SectionTitle
               badge="Nos expériences"
-              title="Des aventures inoubliables"
-              subtitle="De l'adrénaline du quad à la sérénité des chutes, chaque expérience est une invitation au voyage."
+              title={activeQuery ? `Expériences — "${activeQuery}"` : 'Des aventures inoubliables'}
+              subtitle={activeQuery
+                ? `${filteredExperiences.length} résultat${filteredExperiences.length !== 1 ? 's' : ''} trouvé${filteredExperiences.length !== 1 ? 's' : ''}`
+                : "De l'adrénaline du quad à la sérénité des chutes, chaque expérience est une invitation au voyage."}
             />
-            <button
-              onClick={() => onNavigate('experiences')}
-              className="reveal-left flex items-center gap-2 text-sky font-semibold hover:gap-3 transition-all whitespace-nowrap"
-            >
-              Voir tout <ArrowRight className="w-5 h-5" />
-            </button>
+            {!activeQuery && (
+              <button
+                onClick={() => onNavigate('experiences')}
+                className="reveal-left flex items-center gap-2 text-sky font-semibold hover:gap-3 transition-all whitespace-nowrap"
+              >
+                Voir tout <ArrowRight className="w-5 h-5" />
+              </button>
+            )}
           </div>
 
           {expLoading && (
@@ -350,9 +500,17 @@ export function HomePage({ onNavigate }: HomeProps) {
               <p className="text-slate-500 font-medium">Impossible de charger les expériences pour le moment.</p>
             </div>
           )}
-          {!expLoading && !expError && (
+          {!expLoading && !expError && filteredExperiences.length === 0 && (
+            <div className="text-center py-16">
+              <p className="text-slate-400 font-medium">Aucune expérience ne correspond à &laquo;&nbsp;{activeQuery}&nbsp;&raquo;.</p>
+              <button onClick={handleClearSearch} className="mt-4 text-sky text-sm font-semibold hover:underline">
+                Réinitialiser la recherche
+              </button>
+            </div>
+          )}
+          {!expLoading && !expError && filteredExperiences.length > 0 && (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
-            {EXPERIENCES.slice(0, 6).map((exp, i) => (
+            {filteredExperiences.map((exp, i) => (
               <div
                 key={exp.id}
                 className="reveal card-hover bg-white rounded-3xl overflow-hidden shadow-lg border border-slate-100"
@@ -404,20 +562,24 @@ export function HomePage({ onNavigate }: HomeProps) {
 
       {/* ═══════════════ ACCOMMODATIONS ═══════════════ */}
       <section className="py-22 bg-sand-light relative overflow-hidden">
-        <div className="absolute top-20 right-0 w-80 h-80 rounded-full bg-accent/10 blur-3xl pointer-events-none"></div>
+        <div className="absolute top-20 right-0 w-80 h-80 rounded-full bg-accent/10 blur-3xl pointer-events-none" />
         <div className="max-w-7xl mx-auto px-5 lg:px-8 relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <SectionTitle
               badge="Hébergements"
-              title="Séjournez avec élégance"
-              subtitle="Studios, appartements, villas et résidences sélectionnés pour leur confort et leur emplacement."
+              title={activeQuery ? `Hébergements — "${activeQuery}"` : 'Séjournez avec élégance'}
+              subtitle={activeQuery
+                ? `${filteredAccommodations.length} résultat${filteredAccommodations.length !== 1 ? 's' : ''} trouvé${filteredAccommodations.length !== 1 ? 's' : ''}`
+                : 'Studios, appartements, villas et résidences sélectionnés pour leur confort et leur emplacement.'}
             />
-            <button
-              onClick={() => onNavigate('accommodations')}
-              className="reveal-left flex items-center gap-2 text-sky font-semibold hover:gap-3 transition-all whitespace-nowrap"
-            >
-              Voir tout <ArrowRight className="w-5 h-5" />
-            </button>
+            {!activeQuery && (
+              <button
+                onClick={() => onNavigate('accommodations')}
+                className="reveal-left flex items-center gap-2 text-sky font-semibold hover:gap-3 transition-all whitespace-nowrap"
+              >
+                Voir tout <ArrowRight className="w-5 h-5" />
+              </button>
+            )}
           </div>
 
           {accLoading && (
@@ -431,9 +593,14 @@ export function HomePage({ onNavigate }: HomeProps) {
               <p className="text-slate-500 font-medium">Impossible de charger les hébergements pour le moment.</p>
             </div>
           )}
-          {!accLoading && !accError && (
+          {!accLoading && !accError && filteredAccommodations.length === 0 && (
+            <div className="text-center py-16">
+              <p className="text-slate-400 font-medium">Aucun hébergement ne correspond à &laquo;&nbsp;{activeQuery}&nbsp;&raquo;.</p>
+            </div>
+          )}
+          {!accLoading && !accError && filteredAccommodations.length > 0 && (
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {ACCOMMODATIONS.map((acc, i) => (
+            {filteredAccommodations.map((acc, i) => (
               <div
                 key={acc.id}
                 className="reveal card-hover bg-white rounded-3xl overflow-hidden shadow-lg"

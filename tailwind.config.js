@@ -12,9 +12,11 @@ export default {
         sand:   { DEFAULT: '#F5E6D3', dark: '#E8C9A0', light: '#FAF2E8' },
       },
       fontFamily: {
-        sans:  ['Manrope', 'system-ui', 'sans-serif'],
-        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+        sans:    ['Manrope', 'system-ui', 'sans-serif'],
+        serif:   ['Cormorant Garamond', 'Georgia', 'serif'],
         display: ['Cormorant Garamond', 'Georgia', 'serif'],
+        slogan:  ['Playfair Display', 'Georgia', 'serif'],
+        'slogan-bold': ['Abril Fatface', 'Playfair Display SC', 'Georgia', 'serif'],
       },
       fontSize: {
         // Luxury typography scale
