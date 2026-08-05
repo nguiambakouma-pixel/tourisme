@@ -1,10 +1,62 @@
+import { useState } from 'react';
 import { ShoppingBag, X, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/lib/CartContext';
+import { useAuth } from '@/lib/AuthContext';
+import { supabase } from '@/lib/supabase';
+import { CheckoutChoiceModal } from '@/components/CheckoutChoiceModal';
 
 export function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, clear, total } = useCart();
+  const navigate = useNavigate();
+  const { session, openAuthModal } = useAuth();
+  const [showChoiceModal, setShowChoiceModal] = useState(false);
 
   const formatPrice = (price: string) => `${price} FCFA`;
+
+  const sendWhatsAppMessage = () => {
+    const lines = items.map(
+      (item) => `- ${item.title} (${item.price} FCFA)`
+    );
+    const totalFormatted = total.toLocaleString('fr-FR');
+    const message = [
+      'Bonjour StayEatSee+, je souhaite réserver :',
+      '',
+      ...lines,
+      '',
+      `Total : ${totalFormatted} FCFA`,
+      'Merci de me confirmer la disponibilité.',
+    ].join('\n');
+    const url = `https://wa.me/237688150361?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+    clear();
+    closeCart();
+  };
+
+  const handleCheckout = async () => {
+    if (session) {
+      try {
+        await supabase.from('reservations').insert({
+          user_id: session.user.id,
+          items: items,
+          total: total,
+        });
+      } catch (error) {
+        console.error('Erreur lors de l’enregistrement de la réservation :', error);
+      }
+    }
+
+    sendWhatsAppMessage();
+  };
+
+  const handleCheckoutButton = () => {
+    if (!session) {
+      setShowChoiceModal(true);
+      return;
+    }
+
+    void handleCheckout();
+  };
 
   return (
     <>
@@ -16,6 +68,22 @@ export function CartDrawer() {
           aria-hidden="true"
         />
       )}
+
+      <CheckoutChoiceModal
+        isOpen={showChoiceModal}
+        onClose={() => setShowChoiceModal(false)}
+        onGuestContinue={() => {
+          setShowChoiceModal(false);
+          sendWhatsAppMessage();
+        }}
+        onLoginClick={() => {
+          setShowChoiceModal(false);
+          closeCart();
+          openAuthModal(() => {
+            void handleCheckout();
+          });
+        }}
+      />
 
       {/* Panel */}
       <div
@@ -86,24 +154,7 @@ export function CartDrawer() {
                 </span>
               </div>
               <button
-                onClick={() => {
-                  const lines = items.map(
-                    (item) => `- ${item.title} (${item.price} FCFA)`
-                  );
-                  const totalFormatted = total.toLocaleString('fr-FR');
-                  const message = [
-                    'Bonjour StayEatSee+, je souhaite réserver :',
-                    '',
-                    ...lines,
-                    '',
-                    `Total : ${totalFormatted} FCFA`,
-                    'Merci de me confirmer la disponibilité.',
-                  ].join('\n');
-                  const url = `https://wa.me/237688150361?text=${encodeURIComponent(message)}`;
-                  window.open(url, '_blank');
-                  clear();
-                  closeCart();
-                }}
+                onClick={handleCheckoutButton}
                 className="btn-shimmer w-full text-white px-6 py-3 rounded-full text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
               >
                 Commander via WhatsApp

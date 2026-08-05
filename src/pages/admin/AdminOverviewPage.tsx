@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 import { Compass, Home, FileText, Loader2, TrendingUp, ArrowRight, Image } from 'lucide-react';
 
 interface Counts {
@@ -10,10 +10,21 @@ interface Counts {
   gallery: number;
 }
 
+interface CustomerSummary {
+  id: string;
+  name: string;
+  contact: string;
+  reservationCount: number;
+  totalSpent: number;
+  lastReservation: string | null;
+}
+
 export function AdminOverviewPage() {
   const navigate = useNavigate();
   const [counts, setCounts] = useState<Counts>({ experiences: 0, accommodations: 0, blogPosts: 0, gallery: 0 });
+  const [customers, setCustomers] = useState<CustomerSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [customersLoading, setCustomersLoading] = useState(true);
 
   useEffect(() => {
     const fetchCounts = async () => {
@@ -31,7 +42,68 @@ export function AdminOverviewPage() {
       });
       setLoading(false);
     };
-    fetchCounts();
+
+    const fetchCustomers = async () => {
+      setCustomersLoading(true);
+
+      const { data: profilesData, error: profilesError } = await supabaseAdmin
+        .from('profiles')
+        .select('id, full_name, role, phone')
+        .neq('role', 'admin')
+        .order('created_at', { ascending: true });
+
+      if (profilesError) {
+        console.error('Erreur lors du chargement des profils clients:', profilesError);
+        setCustomers([]);
+        setCustomersLoading(false);
+        return;
+      }
+
+      const { data: reservationsData } = await supabaseAdmin
+        .from('reservations')
+        .select('user_id, total, created_at');
+
+      const byUser = new Map<string, Array<{ total: number | string; created_at: string | null }>>();
+
+      for (const reservation of reservationsData ?? []) {
+        const userId = reservation.user_id as string;
+        const current = byUser.get(userId) ?? [];
+        current.push({
+          total: Number(reservation.total ?? 0),
+          created_at: reservation.created_at ?? null,
+        });
+        byUser.set(userId, current);
+      }
+
+      const customerList: CustomerSummary[] = (profilesData ?? [])
+        .filter((profile) => profile.role === 'customer')
+        .map((profile) => {
+          const reservations = byUser.get(profile.id) ?? [];
+          const reservationCount = reservations.length;
+          const totalSpent = reservations.reduce((sum, reservation) => sum + Number(reservation.total ?? 0), 0);
+          const lastReservation = reservations
+            .map((reservation) => reservation.created_at)
+            .filter(Boolean)
+            .sort()
+            .at(-1) ?? null;
+
+          return {
+            id: profile.id,
+            name: profile.full_name?.trim() || 'Client sans nom',
+            contact: (profile as { phone?: string | null }).phone?.trim() || '—',
+            reservationCount,
+            totalSpent,
+            lastReservation,
+          };
+        })
+        .sort((a, b) => b.reservationCount - a.reservationCount || a.name.localeCompare(b.name));
+
+      setCustomers(customerList);
+      setCustomersLoading(false);
+    };
+
+    void fetchCounts();
+    void fetchCustomers();
   }, []);
 
   const statCards = [
@@ -153,6 +225,73 @@ export function AdminOverviewPage() {
             </div>
           );
         })}
+      </div>
+
+      {/* Clients overview */}
+      <div className="mb-10">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h2 className="text-base font-bold text-slate-700 flex items-center gap-2">
+            <span className="w-1 h-4 rounded-full bg-gradient-to-b from-accent to-sky inline-block" />
+            Clients
+          </h2>
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+            {customers.length} client{customers.length > 1 ? 's' : ''}
+          </span>
+        </div>
+
+        {customersLoading ? (
+          <div className="flex items-center justify-center rounded-2xl border border-slate-100 bg-white py-10">
+            <Loader2 className="w-6 h-6 animate-spin text-sky" />
+          </div>
+        ) : customers.length === 0 ? (
+          <div className="rounded-2xl border border-slate-100 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+            Aucun client enregistré pour le moment.
+          </div>
+        ) : (
+          <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
+            <div className="hidden md:grid md:grid-cols-[1.5fr_1.5fr_1fr_1fr_1fr] border-b border-slate-100 bg-slate-50/70 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+              <span>Nom</span>
+              <span>Contact</span>
+              <span>Réservations</span>
+              <span>Total dépensé</span>
+              <span>Dernière</span>
+            </div>
+
+            <div className="divide-y divide-slate-100">
+              {customers.map((customer) => (
+                <div key={customer.id} className="grid gap-3 px-4 py-4 md:grid-cols-[1.5fr_1.5fr_1fr_1fr_1fr] md:items-center">
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-slate-800">{customer.name}</p>
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="truncate text-sm text-slate-600">{customer.contact}</p>
+                  </div>
+
+                  <div>
+                    <span className="inline-flex rounded-full bg-sky-pale px-2.5 py-1 text-xs font-semibold text-sky">
+                      {customer.reservationCount}
+                    </span>
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-semibold text-brand">
+                      {customer.totalSpent.toLocaleString('fr-FR')} FCFA
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-sm text-slate-500">
+                      {customer.lastReservation
+                        ? new Date(customer.lastReservation).toLocaleDateString('fr-FR')
+                        : '—'}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Quick actions */}

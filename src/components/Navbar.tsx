@@ -1,7 +1,8 @@
 import { useEffect, useState, memo, useCallback } from 'react';
-import { Menu, X, ShoppingBag } from 'lucide-react';
+import { Menu, X, ShoppingBag, User } from 'lucide-react';
 import { NAV_LINKS } from '@/data';
 import { useCart } from '@/lib/CartContext';
+import { useAuth } from '@/lib/AuthContext';
 
 interface NavbarProps {
   currentPage: string;
@@ -12,6 +13,7 @@ export const Navbar = memo(function Navbar({ currentPage, onNavigate }: NavbarPr
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { items, toggleCart } = useCart();
+  const { session, profile, openAuthModal } = useAuth();
 
   /* ── Throttled scroll listener ── */
   useEffect(() => {
@@ -59,7 +61,7 @@ export const Navbar = memo(function Navbar({ currentPage, onNavigate }: NavbarPr
           scrolled ? 'navbar-scrolled py-3' : 'bg-transparent py-5'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-5 lg:px-8 flex items-center justify-between">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-3 sm:px-5 lg:px-8">
 
           {/* ── Logo ── */}
           <button
@@ -116,28 +118,64 @@ export const Navbar = memo(function Navbar({ currentPage, onNavigate }: NavbarPr
           </div>
 
           {/* ── CTA desktop ── */}
-          <div className="hidden lg:flex items-center gap-2">
+          <div className="hidden items-center gap-2 lg:flex">
             <button
               onClick={() => handleNav('contact')}
-              className="btn-shimmer text-white px-6 py-2.5 rounded-full text-sm shadow-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
+              className="btn-shimmer whitespace-nowrap text-white px-6 py-2.5 rounded-full text-sm shadow-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
             >
               Réserver maintenant
             </button>
           </div>
 
-          {/* ── Cart icon ── */}
-          <button
-            onClick={toggleCart}
-            className="relative p-2.5 rounded-full text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
-            aria-label="Ouvrir le panier"
-          >
-            <ShoppingBag className="w-5 h-5" />
-            {itemCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-gold-light text-navy text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 font-bold leading-none">
-                {itemCount}
-              </span>
+          <div className="flex items-center gap-2 shrink-0">
+            {session && profile?.role === 'customer' ? (
+              <button
+                onClick={() => {
+                  window.location.href = '/compte';
+                }}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f7d7a4] text-sm font-bold text-[#0d2b46] shadow-[0_0_0_3px_rgba(255,255,255,0.6),0_8px_20px_rgba(247,215,164,0.45)] ring-2 ring-[#fff4d6] transition hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
+                aria-label="Mon compte"
+                title="Mon compte"
+              >
+                {(() => {
+                  const fullName = profile?.full_name?.trim();
+                  const email = session.user.email ?? '';
+                  const source = fullName || email;
+                  const initials = source
+                    .split(/\s+/)
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .map((part) => part[0])
+                    .join('')
+                    .toUpperCase();
+
+                  return initials || email.slice(0, 2).toUpperCase();
+                })()}
+              </button>
+            ) : (
+              <button
+                onClick={() => openAuthModal()}
+                className="p-2.5 rounded-full text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
+                aria-label="Connexion au compte"
+                title="Connexion"
+              >
+                <User className="w-5 h-5" />
+              </button>
             )}
-          </button>
+
+            <button
+              onClick={toggleCart}
+              className="relative p-2.5 rounded-full text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
+              aria-label="Ouvrir le panier"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-gold-light text-navy text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 font-bold leading-none">
+                  {itemCount}
+                </span>
+              )}
+            </button>
+          </div>
 
           {/* ── Mobile toggle ── */}
           <button
@@ -187,6 +225,44 @@ export const Navbar = memo(function Navbar({ currentPage, onNavigate }: NavbarPr
             >
               Réserver maintenant
             </button>
+            {session && profile?.role === 'customer' ? (
+              <button
+                onClick={() => {
+                  window.location.href = '/compte';
+                  setMobileOpen(false);
+                }}
+                className="mt-2 flex items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm font-medium text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
+              >
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f7d7a4] text-[11px] font-bold text-[#0d2b46] ring-2 ring-[#fff4d6] shadow-[0_0_0_2px_rgba(255,255,255,0.4)]">
+                  {(() => {
+                    const fullName = profile?.full_name?.trim();
+                    const email = session.user.email ?? '';
+                    const source = fullName || email;
+                    const initials = source
+                      .split(/\s+/)
+                      .filter(Boolean)
+                      .slice(0, 2)
+                      .map((part) => part[0])
+                      .join('')
+                      .toUpperCase();
+
+                    return initials || email.slice(0, 2).toUpperCase();
+                  })()}
+                </span>
+                Mon compte
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  openAuthModal();
+                  setMobileOpen(false);
+                }}
+                className="mt-2 flex items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm font-medium text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
+              >
+                <User className="w-4 h-4" />
+                Se connecter
+              </button>
+            )}
           </div>
         </div>
       </nav>

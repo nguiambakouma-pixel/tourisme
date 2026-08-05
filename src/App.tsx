@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { AuthModal } from '@/components/AuthModal';
 
 // Lazy-loaded page components - code split at route level
 const HomePage = lazy(() => import('@/pages/HomePage').then(m => ({ default: m.HomePage })));
@@ -12,6 +13,8 @@ const GalleryPage = lazy(() => import('@/pages/GalleryPage').then(m => ({ defaul
 const BlogPage = lazy(() => import('@/pages/BlogPage').then(m => ({ default: m.BlogPage })));
 const ContactPage = lazy(() => import('@/pages/ContactPage').then(m => ({ default: m.ContactPage })));
 const CartDrawer = lazy(() => import('@/components/CartDrawer').then(m => ({ default: m.CartDrawer })));
+const CustomerProtectedRoute = lazy(() => import('@/components/CustomerProtectedRoute').then(m => ({ default: m.CustomerProtectedRoute })));
+const MyReservationsPage = lazy(() => import('@/pages/account/MyReservationsPage').then(m => ({ default: m.MyReservationsPage })));
 
 // Admin pages - lazy loaded
 const LoginPage = lazy(() => import('@/pages/admin/LoginPage').then(m => ({ default: m.LoginPage })));
@@ -21,6 +24,7 @@ const ExperiencesAdminPage = lazy(() => import('@/pages/admin/ExperiencesAdminPa
 const AccommodationsAdminPage = lazy(() => import('@/pages/admin/AccommodationsAdminPage').then(m => ({ default: m.AccommodationsAdminPage })));
 const BlogAdminPage = lazy(() => import('@/pages/admin/BlogAdminPage').then(m => ({ default: m.BlogAdminPage })));
 const GalleryAdminPage = lazy(() => import('@/pages/admin/GalleryAdminPage').then(m => ({ default: m.GalleryAdminPage })));
+const CustomersAdminPage = lazy(() => import('@/pages/admin/CustomersAdminPage').then(m => ({ default: m.CustomersAdminPage })));
 const ProtectedRoute = lazy(() => import('@/components/admin/ProtectedRoute').then(m => ({ default: m.ProtectedRoute })));
 
 // Minimal loading fallback - just a blank div with background color to avoid layout shift
@@ -63,6 +67,7 @@ function App() {
               <Route path="accommodations" element={<AccommodationsAdminPage />} />
               <Route path="blog" element={<BlogAdminPage />} />
               <Route path="gallery" element={<GalleryAdminPage />} />
+              <Route path="customers" element={<CustomersAdminPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/admin/login" replace />} />
           </Routes>
@@ -77,6 +82,7 @@ function App() {
       <Navbar currentPage={page} onNavigate={handleNavigate} />
       <Suspense fallback={<PageFallback />}>
         <CartDrawer />
+        <AuthModal />
         <main className="page-enter">
           <Routes>
             <Route path="/"               element={<HomePage onNavigate={handleNavigate} />} />
@@ -86,6 +92,7 @@ function App() {
             <Route path="/gallery"        element={<GalleryPage />} />
             <Route path="/blog"           element={<BlogPage />} />
             <Route path="/contact"        element={<ContactPage />} />
+            <Route path="/compte" element={<CustomerProtectedRoute><MyReservationsPage /></CustomerProtectedRoute>} />
             <Route path="*"               element={<Navigate to="/" replace />} />
           </Routes>
         </main>
