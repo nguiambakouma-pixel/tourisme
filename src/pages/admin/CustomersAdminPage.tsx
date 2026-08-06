@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Loader2, Users, Phone, CalendarDays, Wallet } from 'lucide-react';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 interface CustomerRow {
   id: string;
   name: string;
   contact: string;
+  email: string;
   reservationCount: number;
   totalSpent: number;
   lastReservation: string | null;
@@ -19,9 +20,9 @@ export function CustomersAdminPage() {
     const fetchCustomers = async () => {
       setLoading(true);
 
-      const { data: profilesData, error: profilesError } = await supabaseAdmin
+      const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, full_name, role, phone')
+        .select('id, full_name, role, phone, email')
         .neq('role', 'admin')
         .order('created_at', { ascending: true });
 
@@ -32,7 +33,7 @@ export function CustomersAdminPage() {
         return;
       }
 
-      const { data: reservationsData } = await supabaseAdmin
+      const { data: reservationsData } = await supabase
         .from('reservations')
         .select('user_id, total, created_at');
 
@@ -64,6 +65,7 @@ export function CustomersAdminPage() {
             id: profile.id,
             name: profile.full_name?.trim() || 'Client sans nom',
             contact: profile.phone?.trim() || '—',
+            email: profile.email?.trim() || '—',
             reservationCount: reservations.length,
             totalSpent,
             lastReservation,
@@ -114,9 +116,12 @@ export function CustomersAdminPage() {
                   <p className="truncate font-semibold text-slate-800">{customer.name}</p>
                 </div>
 
-                <div className="min-w-0 flex items-center gap-2 text-sm text-slate-600">
-                  <Phone className="h-4 w-4 text-slate-400" />
-                  <span className="truncate">{customer.contact}</span>
+                <div className="min-w-0 text-sm text-slate-600">
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-slate-400" />
+                    <span className="truncate">{customer.contact}</span>
+                  </div>
+                  <p className="mt-1 text-xs text-slate-400 break-words">{customer.email}</p>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-slate-700">

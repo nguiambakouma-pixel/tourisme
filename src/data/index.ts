@@ -5,6 +5,7 @@ export const NAV_LINKS = [
   { label: 'À propos',       page: 'about' },
   { label: 'Nos expériences',page: 'experiences' },
   { label: 'Hébergements',   page: 'accommodations' },
+  { label: 'Packs',          page: 'packs' },
   { label: 'Galerie',        page: 'gallery' },
   { label: 'Blog',           page: 'blog' },
   { label: 'Contact',        page: 'contact' },

@@ -31,3 +31,4 @@ export function AccommodationFeatures({ features }: { features: string[] }) {
 }
 
 export { FEATURE_ICONS };
+

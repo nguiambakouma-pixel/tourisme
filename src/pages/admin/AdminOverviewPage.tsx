@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase, supabaseAdmin } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { Compass, Home, FileText, Loader2, TrendingUp, ArrowRight, Image } from 'lucide-react';
 
 interface Counts {
@@ -46,7 +46,7 @@ export function AdminOverviewPage() {
     const fetchCustomers = async () => {
       setCustomersLoading(true);
 
-      const { data: profilesData, error: profilesError } = await supabaseAdmin
+      const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('id, full_name, role, phone')
         .neq('role', 'admin')
@@ -59,7 +59,7 @@ export function AdminOverviewPage() {
         return;
       }
 
-      const { data: reservationsData } = await supabaseAdmin
+      const { data: reservationsData } = await supabase
         .from('reservations')
         .select('user_id, total, created_at');
 

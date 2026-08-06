@@ -117,17 +117,24 @@ export const Navbar = memo(function Navbar({ currentPage, onNavigate }: NavbarPr
             })}
           </div>
 
-          {/* ── CTA desktop ── */}
-          <div className="hidden items-center gap-2 lg:flex">
-            <button
-              onClick={() => handleNav('contact')}
-              className="btn-shimmer whitespace-nowrap text-white px-6 py-2.5 rounded-full text-sm shadow-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
-            >
-              Réserver maintenant
-            </button>
-          </div>
+
 
           <div className="flex items-center gap-2 shrink-0">
+            {/* ── Panier (gauche des initiales) ── */}
+            <button
+              onClick={toggleCart}
+              className="relative p-2.5 rounded-full text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
+              aria-label="Ouvrir le panier"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-gold-light text-navy text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 font-bold leading-none">
+                  {itemCount}
+                </span>
+              )}
+            </button>
+
+            {/* ── Compte / initiales ── */}
             {session && profile?.role === 'customer' ? (
               <button
                 onClick={() => {
@@ -163,30 +170,17 @@ export const Navbar = memo(function Navbar({ currentPage, onNavigate }: NavbarPr
               </button>
             )}
 
+            {/* ── Hamburger (droite des initiales, mobile only) ── */}
             <button
-              onClick={toggleCart}
-              className="relative p-2.5 rounded-full text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
-              aria-label="Ouvrir le panier"
+              className="lg:hidden text-white p-2 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 transition-colors"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label={mobileOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-menu"
             >
-              <ShoppingBag className="w-5 h-5" />
-              {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-gold-light text-navy text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 font-bold leading-none">
-                  {itemCount}
-                </span>
-              )}
+              {mobileOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
             </button>
           </div>
-
-          {/* ── Mobile toggle ── */}
-          <button
-            className="lg:hidden text-white p-2 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 transition-colors"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label={mobileOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
-            aria-expanded={mobileOpen}
-            aria-controls="mobile-menu"
-          >
-            {mobileOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
-          </button>
         </div>
 
         {/* ── Mobile menu panel ── */}
@@ -219,12 +213,7 @@ export const Navbar = memo(function Navbar({ currentPage, onNavigate }: NavbarPr
                 </button>
               );
             })}
-            <button
-              onClick={() => handleNav('contact')}
-              className="btn-shimmer text-white px-4 py-3 rounded-2xl font-semibold mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
-            >
-              Réserver maintenant
-            </button>
+
             {session && profile?.role === 'customer' ? (
               <button
                 onClick={() => {

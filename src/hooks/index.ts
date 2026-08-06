@@ -110,6 +110,32 @@ export function useExperiences() {
   return { data, loading, error };
 }
 
+export function usePackages() {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .from('packages')
+      .select('*')
+      .order('id', { ascending: true })
+      .then(({ data: result, error: err }) => {
+        if (cancelled) return;
+        if (err) { setError(err.message); setLoading(false); return; }
+        setData((result ?? []).map((p) => ({
+          id: p.id, title: p.title, description: p.description, price: p.price,
+          image: p.image, badge: p.badge, items: p.items ?? [],
+        })));
+        setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  return { data, loading, error };
+}
+
 export function useGalleryImages() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

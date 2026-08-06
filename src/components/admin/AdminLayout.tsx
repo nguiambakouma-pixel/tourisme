@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
-import { LayoutDashboard, Compass, Home, FileText, Image, Users, LogOut, Menu, X, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Compass, Home, FileText, Image, Users, LogOut, Menu, X, ChevronRight, Gift, ClipboardList } from 'lucide-react';
 
 const NAV_ITEMS = [
   { to: '/admin',                label: "Vue d'ensemble",  icon: LayoutDashboard, color: 'from-brand to-brand-light',  dot: '#1A3C7A' },
   { to: '/admin/customers',      label: 'Clients',         icon: Users,            color: 'from-accent to-sky',          dot: '#D4572A' },
+  { to: '/admin/reservations',   label: 'Réservations',    icon: ClipboardList,    color: 'from-brand to-brand-light',  dot: '#1A3C7A' },
   { to: '/admin/experiences',    label: 'Expériences',     icon: Compass,          color: 'from-sky to-sky-light',      dot: '#3EABD4' },
   { to: '/admin/accommodations', label: 'Hébergements',    icon: Home,             color: 'from-brand to-sky',          dot: '#254FA3' },
+  { to: '/admin/packages',       label: 'Packs',           icon: Gift,             color: 'from-accent to-brand',       dot: '#D4572A' },
   { to: '/admin/blog',           label: 'Articles de blog',icon: FileText,         color: 'from-accent to-accent-light',dot: '#D4572A' },
   { to: '/admin/gallery',        label: 'Galerie',         icon: Image,            color: 'from-sky to-brand',          dot: '#3EABD4' },
 ];

@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { ShoppingBag, X, Trash2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/lib/CartContext';
 import { useAuth } from '@/lib/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { CheckoutChoiceModal } from '@/components/CheckoutChoiceModal';
 
 export function CartDrawer() {
-  const { items, isOpen, closeCart, removeItem, clear, total } = useCart();
-  const navigate = useNavigate();
-  const { session, openAuthModal } = useAuth();
+  const { items, isOpen, closeCart, removeItem, clear, total, editingReservationId, stopEditing } = useCart();
+  const { session, isCustomer, openAuthModal } = useAuth();
   const [showChoiceModal, setShowChoiceModal] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const formatPrice = (price: string) => `${price} FCFA`;
 
@@ -34,23 +34,60 @@ export function CartDrawer() {
   };
 
   const handleCheckout = async () => {
-    if (session) {
-      try {
-        await supabase.from('reservations').insert({
-          user_id: session.user.id,
-          items: items,
-          total: total,
-        });
-      } catch (error) {
-        console.error('Erreur lors de l’enregistrement de la réservation :', error);
+    const { data: { session: freshSession } } = await supabase.auth.getSession();
+
+    if (freshSession) {
+      const { error } = await supabase.from('reservations').insert({
+        user_id: freshSession.user.id,
+        items: items,
+        total: total,
+      });
+      if (error) {
+        console.error('Erreur lors de l\'enregistrement de la réservation :', error);
       }
     }
 
     sendWhatsAppMessage();
   };
 
+  const handleSaveEdit = async () => {
+    if (editingReservationId === null) return;
+    setLocalError(null);
+    setSaving(true);
+
+    const { error } = await supabase
+      .from('reservations')
+      .update({ items: items, total: total })
+      .eq('id', editingReservationId);
+
+    if (error) {
+      console.error('Erreur mise à jour réservation :', error);
+      setLocalError('Impossible de sauvegarder les modifications. Réessayez.');
+      setSaving(false);
+      return;
+    }
+
+    // Informer l'agence par WhatsApp
+    const lines = items.map((item) => `- ${item.title} (${item.price} FCFA)`);
+    const totalFormatted = total.toLocaleString('fr-FR');
+    const message = [
+      `Bonjour StayEatSee+, j'ai modifié ma réservation en attente (ID : ${editingReservationId}) :`,
+      '',
+      ...lines,
+      '',
+      `Nouveau total : ${totalFormatted} FCFA`,
+      'Merci de prendre en compte ces changements.',
+    ].join('\n');
+    window.open(`https://wa.me/237688150361?text=${encodeURIComponent(message)}`, '_blank');
+
+    setSaving(false);
+    stopEditing();
+    clear();
+    closeCart();
+  };
+
   const handleCheckoutButton = () => {
-    if (!session) {
+    if (!session || !isCustomer) {
       setShowChoiceModal(true);
       return;
     }
@@ -153,18 +190,44 @@ export function CartDrawer() {
                   {formatPrice(String(total))}
                 </span>
               </div>
-              <button
-                onClick={handleCheckoutButton}
-                className="btn-shimmer w-full text-white px-6 py-3 rounded-full text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
-              >
-                Commander via WhatsApp
-              </button>
-              <button
-                onClick={clear}
-                className="block w-full text-center text-xs text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 rounded-lg py-1"
-              >
-                Vider le panier
-              </button>
+
+              {/* ── Mode édition ── */}
+              {editingReservationId !== null ? (
+                <>
+                  {localError && (
+                    <p className="text-xs text-red-500 text-center">{localError}</p>
+                  )}
+                  <button
+                    onClick={() => { stopEditing(); clear(); }}
+                    className="block w-full text-center text-xs text-gray-400 hover:text-gray-600 transition-colors rounded-lg py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
+                  >
+                    Annuler l'édition
+                  </button>
+                  <button
+                    onClick={() => void handleSaveEdit()}
+                    disabled={saving}
+                    className="btn-shimmer w-full text-white px-6 py-3 rounded-full text-sm font-semibold disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
+                  >
+                    {saving ? 'Enregistrement…' : 'Enregistrer les modifications'}
+                  </button>
+                </>
+              ) : (
+                /* ── Mode normal ── */
+                <>
+                  <button
+                    onClick={handleCheckoutButton}
+                    className="btn-shimmer w-full text-white px-6 py-3 rounded-full text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
+                  >
+                    Commander via WhatsApp
+                  </button>
+                  <button
+                    onClick={clear}
+                    className="block w-full text-center text-xs text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 rounded-lg py-1"
+                  >
+                    Vider le panier
+                  </button>
+                </>
+              )}
             </div>
           </>
         )}

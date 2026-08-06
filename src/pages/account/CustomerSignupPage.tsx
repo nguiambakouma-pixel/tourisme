@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 
 export function CustomerSignupPage() {
   const navigate = useNavigate();
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -14,6 +15,12 @@ export function CustomerSignupPage() {
     event.preventDefault();
     setError('');
 
+    const trimmedFullName = fullName.trim();
+    if (!trimmedFullName) {
+      setError('Veuillez indiquer votre nom complet.');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError('Les mots de passe ne correspondent pas.');
       return;
@@ -21,7 +28,7 @@ export function CustomerSignupPage() {
 
     setIsSubmitting(true);
 
-    const { error: signUpError } = await supabase.auth.signUp({
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email: email.trim(),
       password,
     });
@@ -30,6 +37,21 @@ export function CustomerSignupPage() {
       setError(signUpError.message);
       setIsSubmitting(false);
       return;
+    }
+
+    const userId = data?.user?.id;
+    if (userId) {
+      const { error: profileError } = await supabase.from('profiles').upsert(
+        {
+          id: userId,
+          full_name: trimmedFullName,
+          role: 'customer',
+        },
+        { onConflict: 'id' }
+      );
+      if (profileError) {
+        console.error('Erreur lors de la création du profil :', profileError);
+      }
     }
 
     navigate('/compte');
@@ -66,6 +88,22 @@ export function CustomerSignupPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <label htmlFor="signup-name" className="text-sm font-medium text-slate-100">
+                Nom complet
+              </label>
+              <input
+                id="signup-name"
+                type="text"
+                value={fullName}
+                onChange={(event) => setFullName(event.target.value)}
+                required
+                autoComplete="name"
+                className="w-full rounded-2xl border border-white/20 bg-white/90 px-4 py-3.5 text-base text-[#0f2b46] shadow-inner shadow-[#dbeaf6]/40 outline-none transition duration-200 placeholder:text-slate-500 focus:border-[#8bd4de] focus:bg-white focus:ring-4 focus:ring-[#8bd4de]/25"
+                placeholder="Jean Dupont"
+              />
+            </div>
+
             <div className="space-y-2">
               <label htmlFor="signup-email" className="text-sm font-medium text-slate-100">
                 Email

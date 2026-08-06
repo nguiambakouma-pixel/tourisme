@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useMemo, ReactNode, use
 
 export interface CartItem {
   key: string;
-  type: 'experience' | 'accommodation';
+  type: 'experience' | 'accommodation' | 'package';
   id: number;
   title: string;
   price: string;
@@ -20,6 +20,9 @@ interface CartContextValue {
   closeCart: () => void;
   toggleCart: () => void;
   total: number;
+  editingReservationId: number | null;
+  startEditing: (reservationId: number, items: CartItem[]) => void;
+  stopEditing: () => void;
 }
 
 const CartContext = createContext<CartContextValue | undefined>(undefined);
@@ -39,6 +42,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   });
   const [isOpen, setIsOpen] = useState(false);
+  const [editingReservationId, setEditingReservationId] = useState<number | null>(null);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
@@ -60,13 +64,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const total = useMemo(() => items.reduce((sum, item) => sum + parsePrice(item.price), 0), [items]);
 
+  const startEditing = useCallback((reservationId: number, newItems: CartItem[]) => {
+    setItems(newItems);
+    setEditingReservationId(reservationId);
+    setIsOpen(true);
+  }, []);
+
+  const stopEditing = useCallback(() => {
+    setEditingReservationId(null);
+  }, []);
+
   const value = useMemo<CartContextValue>(() => ({
     items, isOpen, addItem, removeItem, isInCart, clear,
     openCart: () => setIsOpen(true),
     closeCart: () => setIsOpen(false),
     toggleCart: () => setIsOpen((o) => !o),
     total,
-  }), [items, isOpen, addItem, removeItem, isInCart, clear, total]);
+    editingReservationId,
+    startEditing,
+    stopEditing,
+  }), [items, isOpen, addItem, removeItem, isInCart, clear, total, editingReservationId, startEditing, stopEditing]);
 
   return (
     <CartContext.Provider value={value}>

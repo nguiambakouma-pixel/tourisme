@@ -13,6 +13,8 @@ interface AuthContextValue {
   loading: boolean;
   profile: Profile | null;
   roleLoading: boolean;
+  isCustomer: boolean;
+  isAdmin: boolean;
   isAuthModalOpen: boolean;
   openAuthModal: (onSuccess?: () => void) => void;
   closeAuthModal: () => void;
@@ -101,6 +103,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     profile,
     roleLoading,
+    isCustomer: profile?.role === 'customer',
+    isAdmin: profile?.role === 'admin',
     isAuthModalOpen,
     openAuthModal,
     closeAuthModal,

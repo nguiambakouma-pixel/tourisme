@@ -3,12 +3,14 @@ import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { AuthModal } from '@/components/AuthModal';
+import { useCart } from '@/lib/CartContext';
 
 // Lazy-loaded page components - code split at route level
 const HomePage = lazy(() => import('@/pages/HomePage').then(m => ({ default: m.HomePage })));
 const AboutPage = lazy(() => import('@/pages/AboutPage').then(m => ({ default: m.AboutPage })));
 const ExperiencesPage = lazy(() => import('@/pages/ExperiencesPage').then(m => ({ default: m.ExperiencesPage })));
 const AccommodationsPage = lazy(() => import('@/pages/AccommodationsPage').then(m => ({ default: m.AccommodationsPage })));
+const PacksPage = lazy(() => import('@/pages/PacksPage').then(m => ({ default: m.PacksPage })));
 const GalleryPage = lazy(() => import('@/pages/GalleryPage').then(m => ({ default: m.GalleryPage })));
 const BlogPage = lazy(() => import('@/pages/BlogPage').then(m => ({ default: m.BlogPage })));
 const ContactPage = lazy(() => import('@/pages/ContactPage').then(m => ({ default: m.ContactPage })));
@@ -22,6 +24,8 @@ const AdminLayout = lazy(() => import('@/components/admin/AdminLayout').then(m =
 const AdminOverviewPage = lazy(() => import('@/pages/admin/AdminOverviewPage').then(m => ({ default: m.AdminOverviewPage })));
 const ExperiencesAdminPage = lazy(() => import('@/pages/admin/ExperiencesAdminPage').then(m => ({ default: m.ExperiencesAdminPage })));
 const AccommodationsAdminPage = lazy(() => import('@/pages/admin/AccommodationsAdminPage').then(m => ({ default: m.AccommodationsAdminPage })));
+const PackagesAdminPage = lazy(() => import('@/pages/admin/PackagesAdminPage').then(m => ({ default: m.PackagesAdminPage })));
+const ReservationsAdminPage = lazy(() => import('@/pages/admin/ReservationsAdminPage').then(m => ({ default: m.ReservationsAdminPage })));
 const BlogAdminPage = lazy(() => import('@/pages/admin/BlogAdminPage').then(m => ({ default: m.BlogAdminPage })));
 const GalleryAdminPage = lazy(() => import('@/pages/admin/GalleryAdminPage').then(m => ({ default: m.GalleryAdminPage })));
 const CustomersAdminPage = lazy(() => import('@/pages/admin/CustomersAdminPage').then(m => ({ default: m.CustomersAdminPage })));
@@ -38,7 +42,7 @@ function AdminFallback() {
 
 export type Page =
   | 'home' | 'about' | 'experiences'
-  | 'accommodations' | 'gallery' | 'blog' | 'contact';
+  | 'accommodations' | 'packs' | 'gallery' | 'blog' | 'contact';
 
 function currentPageFromPath(pathname: string): Page {
   const seg = pathname.replace(/^\//, '');
@@ -53,6 +57,7 @@ function App() {
   const handleNavigate = (p: string) => navigate(p === 'home' ? '/' : `/${p}`);
 
   const isAdmin = location.pathname.startsWith('/admin');
+  const { editingReservationId } = useCart();
 
   /* ── Admin layout : sans Navbar, sans Footer, sans <main> public ── */
   if (isAdmin) {
@@ -65,8 +70,8 @@ function App() {
               <Route index element={<AdminOverviewPage />} />
               <Route path="experiences" element={<ExperiencesAdminPage />} />
               <Route path="accommodations" element={<AccommodationsAdminPage />} />
-              <Route path="blog" element={<BlogAdminPage />} />
-              <Route path="gallery" element={<GalleryAdminPage />} />
+              <Route path="packages" element={<PackagesAdminPage />} />
+              <Route path="reservations" element={<ReservationsAdminPage />} />
               <Route path="customers" element={<CustomersAdminPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/admin/login" replace />} />
@@ -80,6 +85,14 @@ function App() {
   return (
     <div className="min-h-screen bg-white font-sans">
       <Navbar currentPage={page} onNavigate={handleNavigate} />
+
+      {/* ── Bandeau mode édition ── */}
+      {editingReservationId !== null && (
+        <div className="fixed top-16 left-0 right-0 z-40 bg-[#F7D7A4] text-[#0D2B46] text-center text-xs sm:text-sm font-semibold px-4 py-2.5 shadow-md">
+          ✏️ Vous modifiez une réservation en attente — ajoutez ou retirez des éléments, puis validez dans le panier.
+        </div>
+      )}
+
       <Suspense fallback={<PageFallback />}>
         <CartDrawer />
         <AuthModal />
@@ -89,6 +102,7 @@ function App() {
             <Route path="/about"          element={<AboutPage />} />
             <Route path="/experiences"    element={<ExperiencesPage onNavigate={handleNavigate} />} />
             <Route path="/accommodations" element={<AccommodationsPage onNavigate={handleNavigate} />} />
+            <Route path="/packs"           element={<PacksPage />} />
             <Route path="/gallery"        element={<GalleryPage />} />
             <Route path="/blog"           element={<BlogPage />} />
             <Route path="/contact"        element={<ContactPage />} />

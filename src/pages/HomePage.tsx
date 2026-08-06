@@ -147,8 +147,8 @@ function HeroSloganAnimated({ onNavigate }: { onNavigate: (p: string) => void })
       // TOUT
       return 'font-slogan-bold text-[26px] sm:text-[32px] md:text-[38px] lg:text-[46px] xl:text-[52px] leading-[1.3] mt-2 hero-text-shadow block';
     }
-    // subtitle lines
-    return 'font-slogan text-[20px] sm:text-[24px] md:text-[30px] lg:text-[37px] xl:text-[42px] text-[#F8F8F5] leading-[1.3] hero-text-shadow block';
+    // subtitle lines — police fine sans-serif espacée (style image de référence)
+    return 'font-sans font-light tracking-[0.18em] text-[17px] sm:text-[21px] md:text-[26px] lg:text-[32px] xl:text-[37px] text-[#F0EDE8] leading-[1.5] hero-text-shadow block';
   };
 
   return (
