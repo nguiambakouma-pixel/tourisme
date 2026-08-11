@@ -1,9 +1,12 @@
 import { FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { useToast } from '@/lib/ToastContext';
+import { translateAuthError } from '@/lib/toastMessages';
 
 export function CustomerSignupPage() {
   const navigate = useNavigate();
+  const { success, error: toastError } = useToast();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,11 +21,13 @@ export function CustomerSignupPage() {
     const trimmedFullName = fullName.trim();
     if (!trimmedFullName) {
       setError('Veuillez indiquer votre nom complet.');
+      toastError('Veuillez indiquer votre nom complet.');
       return;
     }
 
     if (password !== confirmPassword) {
       setError('Les mots de passe ne correspondent pas.');
+      toastError('Les mots de passe ne correspondent pas.');
       return;
     }
 
@@ -34,7 +39,9 @@ export function CustomerSignupPage() {
     });
 
     if (signUpError) {
-      setError(signUpError.message);
+      const msg = translateAuthError(signUpError.message);
+      setError(msg);
+      toastError(msg);
       setIsSubmitting(false);
       return;
     }
@@ -51,9 +58,11 @@ export function CustomerSignupPage() {
       );
       if (profileError) {
         console.error('Erreur lors de la création du profil :', profileError);
+        toastError('Compte créé, mais erreur lors de la création du profil.');
       }
     }
 
+    success('Compte créé avec succès !');
     navigate('/compte');
   };
 

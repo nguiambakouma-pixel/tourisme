@@ -3,10 +3,12 @@ import { MapPin, Mail, Phone, Clock, MessageCircle, Send, CheckCircle2, Instagra
 import { PageHero } from '@/components/ui';
 import { socials } from '@/data/socials';
 import { usePageMeta, useScrollReveal } from '@/hooks';
+import { useToast } from '@/lib/ToastContext';
 
 export function ContactPage() {
   usePageMeta('Contact | StayEatSee+', 'Contactez StayEatSee+ pour organiser votre séjour à Kribi : réservations, questions, devis personnalisés.');
   useScrollReveal();
+  const { success, error: toastError } = useToast();
   const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
   const [sent, setSent] = useState(false);
   const [error, setError] = useState(false);
@@ -33,14 +35,17 @@ export function ContactPage() {
       const data = await response.json();
       if (response.ok && data.success) {
         setSent(true);
+        success('Message envoyé ! Nous vous répondrons rapidement.');
         setForm({ name: '', email: '', phone: '', subject: '', message: '' });
         setTimeout(() => setSent(false), 5000);
       } else {
         setError(true);
+        toastError('Impossible d\'envoyer le message. Réessayez.');
         setTimeout(() => setError(false), 5000);
       }
     } catch {
       setError(true);
+      toastError('Problème de connexion. Réessayez plus tard.');
       setTimeout(() => setError(false), 5000);
     } finally {
       setIsSubmitting(false);

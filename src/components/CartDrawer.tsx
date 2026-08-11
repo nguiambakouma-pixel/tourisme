@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { ShoppingBag, X, Trash2 } from 'lucide-react';
 import { useCart } from '@/lib/CartContext';
 import { useAuth } from '@/lib/AuthContext';
+import { useToast } from '@/lib/ToastContext';
 import { supabase } from '@/lib/supabase';
 import { CheckoutChoiceModal } from '@/components/CheckoutChoiceModal';
 
 export function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, clear, total, editingReservationId, stopEditing } = useCart();
   const { session, isCustomer, openAuthModal } = useAuth();
+  const { success, error: toastError } = useToast();
   const [showChoiceModal, setShowChoiceModal] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -29,7 +31,7 @@ export function CartDrawer() {
     ].join('\n');
     const url = `https://wa.me/237688150361?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
-    clear();
+    clear(true);
     closeCart();
   };
 
@@ -44,7 +46,10 @@ export function CartDrawer() {
       });
       if (error) {
         console.error('Erreur lors de l\'enregistrement de la réservation :', error);
+        toastError('Impossible d\'enregistrer la réservation. Réessayez.');
+        return;
       }
+      success('Réservation enregistrée ! Ouverture de WhatsApp…');
     }
 
     sendWhatsAppMessage();
@@ -62,7 +67,9 @@ export function CartDrawer() {
 
     if (error) {
       console.error('Erreur mise à jour réservation :', error);
-      setLocalError('Impossible de sauvegarder les modifications. Réessayez.');
+      const msg = 'Impossible de sauvegarder les modifications. Réessayez.';
+      setLocalError(msg);
+      toastError(msg);
       setSaving(false);
       return;
     }
@@ -80,9 +87,10 @@ export function CartDrawer() {
     ].join('\n');
     window.open(`https://wa.me/237688150361?text=${encodeURIComponent(message)}`, '_blank');
 
+    success('Modifications enregistrées ! Ouverture de WhatsApp…');
     setSaving(false);
     stopEditing();
-    clear();
+    clear(true);
     closeCart();
   };
 

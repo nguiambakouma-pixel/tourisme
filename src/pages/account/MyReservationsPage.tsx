@@ -8,6 +8,8 @@ import {
 import { useAuth } from '@/lib/AuthContext';
 import { useCart } from '@/lib/CartContext';
 import { useConfirm } from '@/lib/ConfirmContext';
+import { useToast } from '@/lib/ToastContext';
+import { translateAuthError } from '@/lib/toastMessages';
 import { supabase } from '@/lib/supabase';
 import { usePageMeta } from '@/hooks';
 
@@ -47,6 +49,7 @@ export function MyReservationsPage() {
   const { session, profile, signOut } = useAuth();
   const { startEditing } = useCart();
   const { confirm } = useConfirm();
+  const { success, error: toastError } = useToast();
 
   const [reservations, setReservations]     = useState<Reservation[]>([]);
   const [loading, setLoading]               = useState(true);
@@ -75,7 +78,7 @@ export function MyReservationsPage() {
         .select('*')
         .eq('user_id', session.user.id)
         .order('created_at', { ascending: false });
-      if (error) { console.error(error); setLoading(false); return; }
+      if (error) { console.error(error); toastError('Impossible de charger vos réservations.'); setLoading(false); return; }
       setReservations((data ?? []) as Reservation[]);
       setLoading(false);
     };
@@ -85,40 +88,45 @@ export function MyReservationsPage() {
   const handleSignOut = async () => {
     if (!(await confirm({ title: 'Se déconnecter', message: 'Êtes-vous sûr de vouloir vous déconnecter ?', confirmLabel: 'Oui, me déconnecter', cancelLabel: 'Annuler', danger: true }))) return;
     await signOut();
+    success('Vous êtes déconnecté.');
     navigate('/');
   };
 
   const handleCancelReservation = async (id: string | number) => {
     if (!(await confirm({ message: 'Annuler cette réservation ?', danger: true }))) return;
     const { error } = await supabase.from('reservations').update({ status: 'cancelled' }).eq('id', id);
-    if (error) { console.error(error); return; }
+    if (error) { console.error(error); toastError('Impossible d\'annuler la réservation.'); return; }
     setReservations((prev) => prev.map((r) => r.id === id ? { ...r, status: 'cancelled' } : r));
+    success('Réservation annulée.');
   };
 
   const handleDeleteReservation = async (id: string | number) => {
     if (!(await confirm({ message: 'Supprimer définitivement cette réservation ? Cette action est irréversible.', danger: true }))) return;
     const { error } = await supabase.from('reservations').delete().eq('id', id);
-    if (error) { console.error(error); return; }
+    if (error) { console.error(error); toastError('Impossible de supprimer la réservation.'); return; }
     setReservations((prev) => prev.filter((r) => r.id !== id));
+    success('Réservation supprimée.');
   };
 
   const handleProfileSubmit = async () => {
     if (!session) return;
     const { error } = await supabase.from('profiles').update({ full_name: fullName.trim() || null }).eq('id', session.user.id);
-    if (error) { setSaveError("Impossible d'enregistrer votre nom."); setProfileMessage(null); return; }
+    if (error) { setSaveError("Impossible d'enregistrer votre nom."); toastError("Impossible d'enregistrer votre profil."); setProfileMessage(null); return; }
     setSaveError(null);
     setProfileMessage('Profil mis à jour !');
+    success('Profil mis à jour !');
     setTimeout(() => setProfileMessage(null), 3000);
   };
 
   const handlePasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setPasswordError(null); setPasswordMessage(null);
-    if (!newPassword || !confirmPassword) { setPasswordError('Veuillez remplir les deux champs.'); return; }
-    if (newPassword !== confirmPassword) { setPasswordError('Les mots de passe ne correspondent pas.'); return; }
+    if (!newPassword || !confirmPassword) { setPasswordError('Veuillez remplir les deux champs.'); toastError('Veuillez remplir les deux champs.'); return; }
+    if (newPassword !== confirmPassword) { setPasswordError('Les mots de passe ne correspondent pas.'); toastError('Les mots de passe ne correspondent pas.'); return; }
     const { error } = await supabase.auth.updateUser({ password: newPassword });
-    if (error) { setPasswordError(error.message); return; }
+    if (error) { const msg = translateAuthError(error.message); setPasswordError(msg); toastError(msg); return; }
     setPasswordMessage('Mot de passe mis à jour.');
+    success('Mot de passe mis à jour.');
     setNewPassword(''); setConfirmPassword(''); setShowPasswordForm(false);
   };
 

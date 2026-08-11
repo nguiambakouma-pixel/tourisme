@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useMemo, ReactNode, useCallback } from 'react';
+import { useToast } from '@/lib/ToastContext';
 
 export interface CartItem {
   key: string;
@@ -15,7 +16,7 @@ interface CartContextValue {
   addItem: (item: CartItem) => void;
   removeItem: (key: string) => void;
   isInCart: (key: string) => boolean;
-  clear: () => void;
+  clear: (silent?: boolean) => void;
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
@@ -33,6 +34,7 @@ function parsePrice(price: string): number {
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { success, info } = useToast();
   const [items, setItems] = useState<CartItem[]>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -49,18 +51,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items]);
 
   const addItem = useCallback((item: CartItem) => {
-    setItems((prev) => (prev.some((i) => i.key === item.key) ? prev : [...prev, item]));
-  }, []);
+    if (items.some((i) => i.key === item.key)) {
+      info('Cet article est déjà dans votre panier.');
+      return;
+    }
+    setItems((prev) => [...prev, item]);
+    success(`${item.title} ajouté au panier.`);
+  }, [items, success, info]);
 
   const removeItem = useCallback((key: string) => {
+    const removed = items.find((i) => i.key === key);
     setItems((prev) => prev.filter((i) => i.key !== key));
-  }, []);
+    if (removed) info(`${removed.title} retiré du panier.`);
+  }, [items, info]);
 
   const isInCart = useCallback((key: string) => {
     return items.some((i) => i.key === key);
   }, [items]);
 
-  const clear = useCallback(() => setItems([]), []);
+  const clear = useCallback((silent = false) => {
+    setItems([]);
+    if (!silent) info('Panier vidé.');
+  }, [info]);
 
   const total = useMemo(() => items.reduce((sum, item) => sum + parsePrice(item.price), 0), [items]);
 

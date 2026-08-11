@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
+import { useToast } from '@/lib/ToastContext';
 import { Loader2 } from 'lucide-react';
 
 export function LoginPage() {
   const navigate = useNavigate();
   const { signIn } = useAuth();
+  const { success, error: toastError } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -19,9 +21,11 @@ export function LoginPage() {
     const { error: signInError } = await signIn(email, password);
 
     if (signInError) {
-      setError('Email ou mot de passe incorrect.');
+      setError(signInError);
+      toastError(signInError);
       setSubmitting(false);
     } else {
+      success('Connexion réussie !');
       navigate('/admin', { replace: true });
     }
   };

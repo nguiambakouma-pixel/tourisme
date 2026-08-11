@@ -1,10 +1,12 @@
 import { FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
+import { useToast } from '@/lib/ToastContext';
 
 export function CustomerLoginPage() {
   const navigate = useNavigate();
   const { signIn } = useAuth();
+  const { success, error: toastError } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -19,10 +21,12 @@ export function CustomerLoginPage() {
 
     if (signInError) {
       setError(signInError);
+      toastError(signInError);
       setIsSubmitting(false);
       return;
     }
 
+    success('Connexion réussie !');
     navigate('/compte');
   };
 

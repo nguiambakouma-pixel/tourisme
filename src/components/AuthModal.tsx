@@ -1,9 +1,12 @@
 import { FormEvent, useState } from 'react';
 import { useAuth } from '@/lib/AuthContext';
+import { useToast } from '@/lib/ToastContext';
+import { translateAuthError } from '@/lib/toastMessages';
 import { supabase } from '@/lib/supabase';
 
 export function AuthModal() {
   const { isAuthModalOpen, closeAuthModal, signIn, triggerAuthSuccess } = useAuth();
+  const { success, error: toastError } = useToast();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -25,10 +28,12 @@ export function AuthModal() {
 
     if (signInError) {
       setError(signInError);
+      toastError(signInError);
       setIsSubmitting(false);
       return;
     }
 
+    success('Connexion réussie !');
     triggerAuthSuccess();
     closeAuthModal();
   };
@@ -40,11 +45,13 @@ export function AuthModal() {
     const trimmedFullName = fullName.trim();
     if (!trimmedFullName) {
       setError('Veuillez indiquer votre nom complet.');
+      toastError('Veuillez indiquer votre nom complet.');
       return;
     }
 
     if (password !== confirmPassword) {
       setError('Les mots de passe ne correspondent pas.');
+      toastError('Les mots de passe ne correspondent pas.');
       return;
     }
 
@@ -56,7 +63,9 @@ export function AuthModal() {
     });
 
     if (signUpError) {
-      setError(signUpError.message);
+      const msg = translateAuthError(signUpError.message);
+      setError(msg);
+      toastError(msg);
       setIsSubmitting(false);
       return;
     }
@@ -72,10 +81,15 @@ export function AuthModal() {
         { onConflict: 'id' }
       );
       if (profileError) {
-        setError(profileError.message);
+        const msg = translateAuthError(profileError.message);
+        setError(msg);
+        toastError(msg);
+        setIsSubmitting(false);
+        return;
       }
     }
 
+    success('Compte créé avec succès !');
     triggerAuthSuccess();
     closeAuthModal();
   };
