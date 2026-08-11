@@ -67,7 +67,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const startEditing = useCallback((reservationId: number, newItems: CartItem[]) => {
     setItems(newItems);
     setEditingReservationId(reservationId);
-    setIsOpen(true);
   }, []);
 
   const stopEditing = useCallback(() => {

@@ -5,7 +5,7 @@ import { Loader2 } from 'lucide-react';
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { session, loading, profile, roleLoading } = useAuth();
 
-  if (loading || roleLoading) {
+  if (loading || (roleLoading && !profile)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-navy">
         <Loader2 className="w-8 h-8 text-white animate-spin" />

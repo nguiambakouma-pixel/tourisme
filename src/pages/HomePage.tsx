@@ -128,9 +128,9 @@ function HeroVideo() {
 function HeroSloganAnimated({ onNavigate }: { onNavigate: (p: string) => void }) {
   const SLOGAN_LINES = [
     'Pour votre séjour à',
-    'KRIBI,',
+    'Kribi,',
     'nous nous occupons de',
-    'TOUT.',
+    'tout.',
   ];
   const { displayed, done } = useTypingAnimation(SLOGAN_LINES, {
     charDelay: 42,
@@ -140,15 +140,12 @@ function HeroSloganAnimated({ onNavigate }: { onNavigate: (p: string) => void })
 
   const lineClasses = (i: number) => {
     if (i === 1) {
-      // KRIBI
-      return 'font-slogan-bold text-[46px] sm:text-[58px] md:text-[68px] lg:text-[84px] xl:text-[92px] text-[#F8F8F5] leading-[1.0] tracking-[0.04em] mt-1 hero-text-shadow block';
+      return 'font-slogan-display text-[52px] sm:text-[64px] md:text-[76px] lg:text-[88px] xl:text-[96px] text-white/95 leading-[1.05] tracking-[0.01em] mt-1 hero-text-shadow block';
     }
     if (i === 3) {
-      // TOUT
-      return 'font-slogan-bold text-[26px] sm:text-[32px] md:text-[38px] lg:text-[46px] xl:text-[52px] leading-[1.3] mt-2 hero-text-shadow block';
+      return 'font-slogan-display italic text-[30px] sm:text-[36px] md:text-[42px] lg:text-[50px] xl:text-[56px] leading-[1.2] mt-1 hero-text-shadow block';
     }
-    // subtitle lines — police fine sans-serif espacée (style image de référence)
-    return 'font-sans font-light tracking-[0.18em] text-[17px] sm:text-[21px] md:text-[26px] lg:text-[32px] xl:text-[37px] text-[#F0EDE8] leading-[1.5] hero-text-shadow block';
+    return 'font-slogan text-[15px] sm:text-[17px] md:text-[20px] lg:text-[24px] xl:text-[26px] text-white/80 leading-[1.7] hero-text-shadow block';
   };
 
   return (
@@ -180,11 +177,10 @@ function HeroSloganAnimated({ onNavigate }: { onNavigate: (p: string) => void })
           return (
             <span key={i} className={lineClasses(i)}>
               {i === 1 ? (
-                // KRIBI — use motion for extra pop after typing
                 <motion.span
                   initial={false}
-                  animate={isTyped ? { letterSpacing: '0.06em' } : { letterSpacing: '0.04em' }}
-                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  animate={isTyped ? { opacity: 1, y: 0 } : { opacity: 0.92, y: 2 }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                   className="inline-block"
                 >
                   {displayed[i]}
@@ -336,17 +332,17 @@ export function HomePage({ onNavigate }: HomeProps) {
           >
             {prefersReducedMotion ? (
               <>
-                <p className="font-slogan text-[22px] md:text-[28px] lg:text-[36px] xl:text-[40px] text-[#F8F8F5] leading-[1.2] hero-text-shadow">
+                <p className="font-slogan text-[15px] sm:text-[17px] md:text-[20px] lg:text-[24px] xl:text-[26px] text-white/80 leading-[1.7] hero-text-shadow">
                   Pour votre séjour à
                 </p>
-                <h1 className="font-slogan-bold text-[48px] md:text-[62px] lg:text-[78px] xl:text-[88px] text-[#F8F8F5] leading-[1] tracking-[0.04em] mt-2 hero-text-shadow">
-                  KRIBI,
+                <h1 className="font-slogan-display text-[52px] sm:text-[64px] md:text-[76px] lg:text-[88px] xl:text-[96px] text-white/95 leading-[1.05] tracking-[0.01em] mt-2 hero-text-shadow">
+                  Kribi,
                 </h1>
-                <p className="font-slogan text-[22px] md:text-[28px] lg:text-[36px] xl:text-[40px] text-[#F8F8F5] leading-[1.2] mt-3 hero-text-shadow">
+                <p className="font-slogan text-[15px] sm:text-[17px] md:text-[20px] lg:text-[24px] xl:text-[26px] text-white/80 leading-[1.7] mt-3 hero-text-shadow">
                   nous nous occupons de
                 </p>
-                <p className="font-slogan-bold text-[22px] md:text-[28px] lg:text-[36px] xl:text-[40px] text-[#F8F8F5] leading-[1.2] mt-3 hero-text-shadow">
-                  <span className="text-accent hero-tout-glow">TOUT.</span>
+                <p className="font-slogan-display italic text-[30px] sm:text-[36px] md:text-[42px] lg:text-[50px] xl:text-[56px] leading-[1.2] mt-2 hero-text-shadow">
+                  <span className="text-accent hero-tout-glow">tout.</span>
                 </p>
                 <div className="mt-14 md:mt-16 flex flex-col sm:flex-row gap-5">
                   <button

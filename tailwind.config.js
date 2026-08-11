@@ -3,6 +3,9 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      screens: {
+        'xs': '375px',
+      },
       colors: {
         // ── Charte StayEatSee+ (extraite du logo) ──────────────────────────
         brand:  { DEFAULT: '#1A3C7A', dark: '#122C5E', light: '#254FA3', pale: '#EBF0FA' },
@@ -15,8 +18,8 @@ export default {
         sans:    ['Manrope', 'system-ui', 'sans-serif'],
         serif:   ['Cormorant Garamond', 'Georgia', 'serif'],
         display: ['Cormorant Garamond', 'Georgia', 'serif'],
-        slogan:  ['Playfair Display', 'Georgia', 'serif'],
-        'slogan-bold': ['Abril Fatface', 'Playfair Display SC', 'Georgia', 'serif'],
+        slogan:  ['Manrope', 'system-ui', 'sans-serif'],
+        'slogan-display': ['Cormorant Garamond', 'Georgia', 'serif'],
       },
       fontSize: {
         // Luxury typography scale

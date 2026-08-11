@@ -1,5 +1,6 @@
 import { useEffect, useState, memo, useCallback } from 'react';
-import { Menu, X, ShoppingBag, User } from 'lucide-react';
+import { Menu, X, ShoppingBag, User, Pencil } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import { NAV_LINKS } from '@/data';
 import { useCart } from '@/lib/CartContext';
 import { useAuth } from '@/lib/AuthContext';
@@ -12,8 +13,12 @@ interface NavbarProps {
 export const Navbar = memo(function Navbar({ currentPage, onNavigate }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { items, toggleCart } = useCart();
+  const { items, toggleCart, editingReservationId } = useCart();
   const { session, profile, openAuthModal } = useAuth();
+  const location = useLocation();
+
+  /* Pages sans hero → navbar toujours opaque */
+  const isNoHeroPage = location.pathname === '/compte';
 
   /* ── Throttled scroll listener ── */
   useEffect(() => {
@@ -58,7 +63,7 @@ export const Navbar = memo(function Navbar({ currentPage, onNavigate }: NavbarPr
     <>
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled ? 'navbar-scrolled py-3' : 'bg-transparent py-5'
+          scrolled || editingReservationId !== null || isNoHeroPage ? 'navbar-scrolled py-3' : 'bg-transparent py-5'
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-3 sm:px-5 lg:px-8">
@@ -183,6 +188,14 @@ export const Navbar = memo(function Navbar({ currentPage, onNavigate }: NavbarPr
           </div>
         </div>
 
+        {/* ── Barre mode édition ── */}
+        {editingReservationId !== null && (
+          <div className="bg-navy/90 backdrop-blur text-white/90 text-xs sm:text-sm px-5 py-2 flex items-center justify-center gap-2 border-t border-white/10">
+            <Pencil className="w-3.5 h-3.5" />
+            Vous modifiez une réservation en attente — ajoutez ou retirez des éléments, puis validez dans le panier.
+          </div>
+        )}
+
         {/* ── Mobile menu panel ── */}
         <div
           id="mobile-menu"
@@ -190,7 +203,7 @@ export const Navbar = memo(function Navbar({ currentPage, onNavigate }: NavbarPr
             mobileOpen ? 'max-h-[500px] mt-3' : 'max-h-0'
           }`}
         >
-          <div className="glass-dark mx-5 rounded-3xl p-4 flex flex-col gap-1">
+          <div className="glass-dark mx-5 rounded-3xl p-4 flex flex-col gap-1 max-h-[calc(100vh-6rem)] overflow-y-auto">
             {NAV_LINKS.map((link) => {
               const isActive = currentPage === link.page;
               return (

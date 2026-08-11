@@ -5,7 +5,8 @@ import { useAuth } from '@/lib/AuthContext';
 export function CustomerProtectedRoute({ children }: { children: React.ReactNode }) {
   const { session, loading, profile, roleLoading } = useAuth();
 
-  if (loading || roleLoading) {
+  // Initial auth bootstrap only — don't unmount dashboard on background profile refresh
+  if (loading || (roleLoading && !profile)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-sand-light">
         <Loader2 className="w-8 h-8 text-ocean animate-spin" />

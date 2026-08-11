@@ -53,16 +53,14 @@
 
 /* ── Hero Slogan Fonts ───────────────────────────────────────── */
 .font-slogan {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-weight: 400;
-  font-style: italic;
-  letter-spacing: 0.01em;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.14em;
 }
-.font-slogan-bold {
-  font-family: 'Abril Fatface', 'Playfair Display SC', Georgia, serif;
-  font-weight: 400;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+.font-slogan-display {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 /* ── Typing animation ────────────────────────────────────────── */
@@ -195,7 +193,7 @@
   text-shadow: 0 2px 30px rgba(0,0,0,0.35);
 }
 .hero-tout-glow {
-  text-shadow: 0 0 24px rgba(212,87,42,0.35), 0 0 60px rgba(212,87,42,0.15);
+  text-shadow: 0 2px 20px rgba(212,87,42,0.25);
 }
 /* Shine animation for TOUT. — plays once */
 @keyframes tout-shine {

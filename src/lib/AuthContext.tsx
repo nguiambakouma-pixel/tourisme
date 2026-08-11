@@ -34,14 +34,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const authSuccessCallbackRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    const fetchProfile = async (currentSession: Session | null) => {
+    const fetchProfile = async (currentSession: Session | null, { silent = false }: { silent?: boolean } = {}) => {
       if (!currentSession) {
         setProfile(null);
         setRoleLoading(false);
         return;
       }
 
-      setRoleLoading(true);
+      if (!silent) setRoleLoading(true);
 
       const { data, error } = await supabase
         .from('profiles')
@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .single();
 
       if (error) {
-        setProfile(null);
+        if (!silent) setProfile(null);
         setRoleLoading(false);
         return;
       }
@@ -65,9 +65,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, newSession) => {
       setSession(newSession);
-      void fetchProfile(newSession);
+
+      // Token refresh on tab focus — update session only, keep dashboard mounted
+      if (event === 'TOKEN_REFRESHED') return;
+
+      void fetchProfile(newSession, { silent: event === 'USER_UPDATED' });
     });
 
     return () => listener.subscription.unsubscribe();

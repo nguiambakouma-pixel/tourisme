@@ -86,17 +86,10 @@ function App() {
     <div className="min-h-screen bg-white font-sans">
       <Navbar currentPage={page} onNavigate={handleNavigate} />
 
-      {/* ── Bandeau mode édition ── */}
-      {editingReservationId !== null && (
-        <div className="fixed top-16 left-0 right-0 z-40 bg-[#F7D7A4] text-[#0D2B46] text-center text-xs sm:text-sm font-semibold px-4 py-2.5 shadow-md">
-          ✏️ Vous modifiez une réservation en attente — ajoutez ou retirez des éléments, puis validez dans le panier.
-        </div>
-      )}
-
       <Suspense fallback={<PageFallback />}>
         <CartDrawer />
         <AuthModal />
-        <main className="page-enter">
+        <main className={`page-enter overflow-x-hidden ${editingReservationId !== null ? 'pt-9' : ''}`}>
           <Routes>
             <Route path="/"               element={<HomePage onNavigate={handleNavigate} />} />
             <Route path="/about"          element={<AboutPage />} />
