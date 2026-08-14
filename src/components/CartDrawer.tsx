@@ -1,25 +1,30 @@
 import { useState } from 'react';
-import { ShoppingBag, X, Trash2 } from 'lucide-react';
+import { ShoppingBag, X, Trash2, CreditCard } from 'lucide-react';
 import { useCart } from '@/lib/CartContext';
 import { useAuth } from '@/lib/AuthContext';
 import { useToast } from '@/lib/ToastContext';
 import { supabase } from '@/lib/supabase';
 import { CheckoutChoiceModal } from '@/components/CheckoutChoiceModal';
+import { PaymentModal } from '@/components/PaymentModal';
 
 export function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, clear, total, editingReservationId, stopEditing } = useCart();
   const { session, isCustomer, openAuthModal } = useAuth();
   const { success, error: toastError } = useToast();
-  const [showChoiceModal, setShowChoiceModal] = useState(false);
-  const [localError, setLocalError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
+
+  const [showChoiceModal, setShowChoiceModal]       = useState(false);
+  const [localError, setLocalError]                 = useState<string | null>(null);
+  const [saving, setSaving]                         = useState(false);
+  const [paymentReservationId, setPaymentReservationId] = useState<number | null>(null);
+
+  /* ──────────────────────────────────────────────── */
+  /*  Helpers                                         */
+  /* ──────────────────────────────────────────────── */
 
   const formatPrice = (price: string) => `${price} FCFA`;
 
   const sendWhatsAppMessage = () => {
-    const lines = items.map(
-      (item) => `- ${item.title} (${item.price} FCFA)`
-    );
+    const lines = items.map((item) => `- ${item.title} (${item.price} FCFA)`);
     const totalFormatted = total.toLocaleString('fr-FR');
     const message = [
       'Bonjour StayEatSee+, je souhaite réserver :',
@@ -29,21 +34,46 @@ export function CartDrawer() {
       `Total : ${totalFormatted} FCFA`,
       'Merci de me confirmer la disponibilité.',
     ].join('\n');
-    const url = `https://wa.me/237688150361?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
+    window.open(`https://wa.me/237688150361?text=${encodeURIComponent(message)}`, '_blank');
     clear(true);
     closeCart();
   };
 
-  const handleCheckout = async () => {
+  /* ──────────────────────────────────────────────── */
+  /*  Checkout — inserts reservation then opens modal */
+  /* ──────────────────────────────────────────────── */
+
+  const handleCheckoutWithPayment = async () => {
+    const { data: { session: freshSession } } = await supabase.auth.getSession();
+    if (!freshSession) return;
+
+    const { data: inserted, error } = await supabase
+      .from('reservations')
+      .insert({ user_id: freshSession.user.id, items, total })
+      .select('id')
+      .single();
+
+    if (error || !inserted) {
+      console.error('Erreur lors de l\'enregistrement de la réservation :', error);
+      toastError('Impossible d\'enregistrer la réservation. Réessayez.');
+      return;
+    }
+
+    setPaymentReservationId(inserted.id as number);
+  };
+
+  /* ──────────────────────────────────────────────── */
+  /*  Checkout — WhatsApp only (behaviour unchanged)  */
+  /* ──────────────────────────────────────────────── */
+
+  const handleCheckoutWhatsApp = async () => {
     const { data: { session: freshSession } } = await supabase.auth.getSession();
 
-    if (freshSession) {
-      const { error } = await supabase.from('reservations').insert({
-        user_id: freshSession.user.id,
-        items: items,
-        total: total,
-      });
+    if (freshSession && session && isCustomer) {
+      const { error } = await supabase
+        .from('reservations')
+        .insert({ user_id: freshSession.user.id, items, total });
+
       if (error) {
         console.error('Erreur lors de l\'enregistrement de la réservation :', error);
         toastError('Impossible d\'enregistrer la réservation. Réessayez.');
@@ -55,6 +85,30 @@ export function CartDrawer() {
     sendWhatsAppMessage();
   };
 
+  /* ──────────────────────────────────────────────── */
+  /*  Button handlers with auth guard                 */
+  /* ──────────────────────────────────────────────── */
+
+  const handlePaymentButton = () => {
+    if (!session || !isCustomer) {
+      setShowChoiceModal(true);
+      return;
+    }
+    void handleCheckoutWithPayment();
+  };
+
+  const handleWhatsAppButton = () => {
+    if (!session || !isCustomer) {
+      setShowChoiceModal(true);
+      return;
+    }
+    void handleCheckoutWhatsApp();
+  };
+
+  /* ──────────────────────────────────────────────── */
+  /*  Edit mode save                                  */
+  /* ──────────────────────────────────────────────── */
+
   const handleSaveEdit = async () => {
     if (editingReservationId === null) return;
     setLocalError(null);
@@ -62,7 +116,7 @@ export function CartDrawer() {
 
     const { error } = await supabase
       .from('reservations')
-      .update({ items: items, total: total })
+      .update({ items, total })
       .eq('id', editingReservationId);
 
     if (error) {
@@ -74,7 +128,6 @@ export function CartDrawer() {
       return;
     }
 
-    // Informer l'agence par WhatsApp
     const lines = items.map((item) => `- ${item.title} (${item.price} FCFA)`);
     const totalFormatted = total.toLocaleString('fr-FR');
     const message = [
@@ -94,14 +147,9 @@ export function CartDrawer() {
     closeCart();
   };
 
-  const handleCheckoutButton = () => {
-    if (!session || !isCustomer) {
-      setShowChoiceModal(true);
-      return;
-    }
-
-    void handleCheckout();
-  };
+  /* ──────────────────────────────────────────────── */
+  /*  Render                                          */
+  /* ──────────────────────────────────────────────── */
 
   return (
     <>
@@ -114,6 +162,7 @@ export function CartDrawer() {
         />
       )}
 
+      {/* Auth choice modal (guest vs login) */}
       <CheckoutChoiceModal
         isOpen={showChoiceModal}
         onClose={() => setShowChoiceModal(false)}
@@ -125,12 +174,25 @@ export function CartDrawer() {
           setShowChoiceModal(false);
           closeCart();
           openAuthModal(() => {
-            void handleCheckout();
+            void handleCheckoutWhatsApp();
           });
         }}
       />
 
-      {/* Panel */}
+      {/* Payment modal — only for session + isCustomer */}
+      <PaymentModal
+        isOpen={paymentReservationId !== null}
+        reservationId={paymentReservationId ?? 0}
+        amount={total}
+        onClose={() => setPaymentReservationId(null)}
+        onSuccess={() => {
+          clear(true);
+          closeCart();
+          success('Réservation payée et confirmée !');
+        }}
+      />
+
+      {/* Sliding panel */}
       <div
         className={`fixed right-0 top-0 z-[70] h-full w-full sm:w-96 bg-white shadow-2xl transition-transform duration-300 flex flex-col ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
@@ -199,7 +261,7 @@ export function CartDrawer() {
                 </span>
               </div>
 
-              {/* ── Mode édition ── */}
+              {/* ── Edit mode ── */}
               {editingReservationId !== null ? (
                 <>
                   {localError && (
@@ -220,16 +282,29 @@ export function CartDrawer() {
                   </button>
                 </>
               ) : (
-                /* ── Mode normal ── */
+                /* ── Normal mode ── */
                 <>
+                  {/* Mobile Money — only for authenticated customers */}
+                  {session && isCustomer && (
+                    <button
+                      onClick={handlePaymentButton}
+                      className="w-full flex items-center justify-center gap-2 rounded-full border-2 border-ocean bg-white px-6 py-3 text-sm font-semibold text-ocean transition hover:bg-ocean hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ocean/40"
+                    >
+                      <CreditCard className="h-4 w-4" />
+                      Payer maintenant (test Mobile Money)
+                    </button>
+                  )}
+
+                  {/* WhatsApp — always visible, behaviour unchanged */}
                   <button
-                    onClick={handleCheckoutButton}
+                    onClick={handleWhatsAppButton}
                     className="btn-shimmer w-full text-white px-6 py-3 rounded-full text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70"
                   >
                     Commander via WhatsApp
                   </button>
+
                   <button
-                    onClick={clear}
+                    onClick={() => clear()}
                     className="block w-full text-center text-xs text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/70 rounded-lg py-1"
                   >
                     Vider le panier

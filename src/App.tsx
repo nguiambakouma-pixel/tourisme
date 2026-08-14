@@ -29,6 +29,7 @@ const ReservationsAdminPage = lazy(() => import('@/pages/admin/ReservationsAdmin
 const BlogAdminPage = lazy(() => import('@/pages/admin/BlogAdminPage').then(m => ({ default: m.BlogAdminPage })));
 const GalleryAdminPage = lazy(() => import('@/pages/admin/GalleryAdminPage').then(m => ({ default: m.GalleryAdminPage })));
 const CustomersAdminPage = lazy(() => import('@/pages/admin/CustomersAdminPage').then(m => ({ default: m.CustomersAdminPage })));
+const TestCampayPage = lazy(() => import('@/pages/admin/TestCampayPage').then(m => ({ default: m.TestCampayPage })));
 const ProtectedRoute = lazy(() => import('@/components/admin/ProtectedRoute').then(m => ({ default: m.ProtectedRoute })));
 
 // Minimal loading fallback - just a blank div with background color to avoid layout shift
@@ -73,6 +74,7 @@ function App() {
               <Route path="packages" element={<PackagesAdminPage />} />
               <Route path="reservations" element={<ReservationsAdminPage />} />
               <Route path="customers" element={<CustomersAdminPage />} />
+              <Route path="test-campay" element={<TestCampayPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/admin/login" replace />} />
           </Routes>
